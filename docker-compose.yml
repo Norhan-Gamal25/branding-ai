@@ -1,0 +1,55 @@
+services:
+
+  # ── Backend: FastAPI + CrewAI pipeline ─────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - path: ./backend/.env
+        required: false          # won't fail if .env doesn't exist (CI/CD injects secrets)
+    environment:
+      EXPORT_DIR: /tmp/exports
+      # Prevent LiteLLM from injecting cache_breakpoint into messages —
+      # Groq rejects any message that contains this unsupported field.
+      LITELLM_LOCAL_CACHE: "false"
+      LITELLM_CACHE: "false"
+    volumes:
+      - exports:/tmp/exports     # persist generated ZIPs across container restarts
+    ports:
+      - "8000:8000"
+    networks:
+      - branding-net
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""
+      interval: 20s
+      timeout: 8s
+      retries: 5
+      start_period: 15s
+
+  # ── Frontend: Next.js 14 (standalone output) ───────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8000   # build-time arg baked into standalone bundle
+    environment:
+      BACKEND_URL: http://backend:8000     # runtime override for the reverse-proxy route
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    networks:
+      - branding-net
+    depends_on:
+      backend:
+        condition: service_healthy
+
+# ── Named volumes ───────────────────────────────────────────────────────────
+volumes:
+  exports:
+
+# ── Networks ────────────────────────────────────────────────────────────────
+networks:
+  branding-net:
+    driver: bridge

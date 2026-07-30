@@ -1,0 +1,87 @@
+{
+  "hero": {
+    "badge": "IBM Builders Challenge 2024",
+    "title": "Build Your Brand",
+    "titleHighlight": "The Halal Way",
+    "subtitle": "The world's first AI brand platform with built-in Islamic and respect guardrails. Generate complete brand kits in any language — in 60 seconds.",
+    "cta": "Generate My Brand Kit",
+    "ctaSecondary": "See How It Works"
+  },
+  "features": {
+    "title": "Everything You Need. Nothing Haram.",
+    "halal": {
+      "title": "100% Halal Guardrails",
+      "desc": "Every output is scanned by IBM Watsonx Granite for Islamic compliance before delivery."
+    },
+    "multilingual": {
+      "title": "50+ Languages",
+      "desc": "Auto-detect your language. Get your brand kit in Arabic, English, French, Turkish, Urdu, and more."
+    },
+    "export": {
+      "title": "Ready-to-Export Kit",
+      "desc": "Download a ZIP with Brand Guide PDF, Content Calendar XLSX, Canva JSON, and Image Prompts TXT."
+    },
+    "fast": {
+      "title": "60-Second Generation",
+      "desc": "Powered by Groq Llama-3.1-70B for lightning-fast content creation."
+    },
+    "ibm": {
+      "title": "IBM Watsonx Strategy",
+      "desc": "Granite-13B powers your brand strategy and compliance — enterprise-grade AI at your fingertips."
+    },
+    "global": {
+      "title": "Built for Muslim Entrepreneurs",
+      "desc": "Whether you're in Cairo, Kuala Lumpur, Lagos, or Istanbul — we speak your language."
+    }
+  },
+  "form": {
+    "title": "Generate Your Brand Kit",
+    "subtitle": "Fill in your business details and we'll create a complete halal brand kit in seconds.",
+    "businessName": "Business Name",
+    "businessNamePlaceholder": "e.g. Amal Bakery",
+    "businessType": "Business Type",
+    "businessTypePlaceholder": "e.g. Bakery, Consulting, Fashion",
+    "city": "City",
+    "cityPlaceholder": "e.g. Dubai",
+    "country": "Country",
+    "countryPlaceholder": "e.g. UAE",
+    "description": "Business Description",
+    "descriptionPlaceholder": "Describe your business, your mission, and who you serve...",
+    "language": "Output Language",
+    "languageAuto": "Auto-detect from my input",
+    "submit": "Generate Brand Kit",
+    "submitting": "Generating your brand kit...",
+    "required": "This field is required"
+  },
+  "result": {
+    "title": "Your Brand Kit is Ready!",
+    "subtitle": "Compliance verified by IBM Watsonx Granite",
+    "approved": "HALAL APPROVED",
+    "brandStory": "Brand Story",
+    "tagline": "Tagline",
+    "values": "Brand Values",
+    "colors": "Color Palette",
+    "typography": "Typography",
+    "captions": "Social Media Captions",
+    "scripts": "Video Scripts",
+    "download": "Download Branding Kit (.zip)",
+    "downloading": "Preparing download...",
+    "includes": "Your kit includes: Brand_Guide.pdf · Content_Calendar.xlsx · Canva_Import.json · Image_Prompts.txt",
+    "newBrand": "Generate Another Brand"
+  },
+  "error": {
+    "guardrail": "Sorry, we cannot support this type of business/content due to our community guidelines.",
+    "generic": "Something went wrong. Please try again.",
+    "validation": "Please fill in all required fields."
+  },
+  "footer": {
+    "tagline": "Build your brand in any language. The Halal Way.",
+    "built": "Built for the IBM Builders Challenge",
+    "compliance": "All content verified by IBM Watsonx Granite"
+  },
+  "nav": {
+    "home": "Home",
+    "generate": "Generate",
+    "about": "About"
+  }
+}
