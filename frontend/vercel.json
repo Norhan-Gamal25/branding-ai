@@ -4,6 +4,11 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "outputDirectory": ".next",
+  "functions": {
+    "app/api/backend/[...path]/route.ts": {
+      "maxDuration": 300
+    }
+  },
   "env": {
     "NEXT_PUBLIC_API_URL": "https://branding-ai-production.up.railway.app",
     "NEXT_PUBLIC_BACKEND_URL": "https://branding-ai-production.up.railway.app",

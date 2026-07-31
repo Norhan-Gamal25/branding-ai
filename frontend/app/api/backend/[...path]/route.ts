@@ -11,6 +11,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:8000";
 
+// CrewAI + Groq calls can take 30–90 s — tell the Vercel runtime not to cut us off.
+export const maxDuration = 300;
+
 async function proxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: pathSegments } = await params;
   const path = pathSegments.join("/");
