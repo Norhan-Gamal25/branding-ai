@@ -6,7 +6,7 @@
   "outputDirectory": ".next",
   "functions": {
     "app/api/backend/[...path]/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 60
     }
   },
   "env": {
