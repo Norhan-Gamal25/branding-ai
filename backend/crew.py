@@ -510,22 +510,24 @@ class SiteOutput(BaseModel):
 
 # ── Model priority lists ─────────────────────────────────────────────────────
 # Each entry: (model_id, max_tokens)
-# max_tokens kept at 8000 to stay within Groq free-tier TPM limits.
+# max_tokens reduced to stay within Groq free-tier TPM limits:
+#   llama-3.3-70b-versatile → 12,000 TPM limit  → max_tokens=6000 (safe headroom)
+#   llama-3.1-8b-instant    →  6,000 TPM limit  → max_tokens=3000 (safe headroom)
 # deepseek-r1-distill-llama-70b decommissioned by Groq — removed.
-# IBM Watsonx is last: enterprise-grade fallback when Groq pools exhausted.
+# IBM Watsonx is last: enterprise-grade fallback, no daily token cap.
 
 # Agent 1 — PlatformEngineer
 _SITE_MODELS = [
-    ("groq/llama-3.3-70b-versatile",              8000),  # primary — best quality
-    ("groq/llama-3.1-8b-instant",                 4000),  # 2nd — separate pool, very fast
-    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise fallback
+    ("groq/llama-3.3-70b-versatile",              6000),  # primary — TPM limit 12k, safe at 6k output
+    ("groq/llama-3.1-8b-instant",                 3000),  # 2nd — TPM limit 6k, safe at 3k output
+    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise, no TPM cap
 ]
 
 # Agent 2 — EthicalStrategyDirector
 _CHAT_MODELS = [
-    ("groq/llama-3.3-70b-versatile",              8000),  # primary — best quality
-    ("groq/llama-3.1-8b-instant",                 4000),  # 2nd — separate pool, very fast
-    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise fallback
+    ("groq/llama-3.3-70b-versatile",              6000),  # primary — TPM limit 12k, safe at 6k output
+    ("groq/llama-3.1-8b-instant",                 3000),  # 2nd — TPM limit 6k, safe at 3k output
+    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise, no TPM cap
 ]
 
 
