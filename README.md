@@ -1,7 +1,5 @@
 # Ethical Brand Studio
 **AI-Powered Ethical Brand Strategy Platform**  
-*Built for the IBM AI Builders Challenge — "Reimagine Creative Industries with AI"*
-
 ---
 
 ## Problem Statement
