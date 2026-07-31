@@ -215,7 +215,16 @@ export default function StrategyChat({
         }),
       });
 
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) {
+        let detail = "";
+        try {
+          const errBody = await res.json();
+          detail = errBody?.detail || "";
+        } catch {
+          /* ignore non-JSON error bodies */
+        }
+        throw new Error(detail ? `Server error: ${detail}` : `Server error: ${res.status}`);
+      }
       const data: { text: string; artifact_html?: string } = await res.json();
 
       let text = data.text || "";

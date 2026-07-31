@@ -1,6 +1,16 @@
 import logging
 import os
 import re
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load API keys from backend/.env regardless of the working directory the server
+# is launched from. Without this a fresh shell has zero keys configured and every
+# model is skipped, surfacing as "All models exhausted" -> HTTP 500.
+_BACKEND_DIR = Path(__file__).resolve().parent
+load_dotenv(_BACKEND_DIR / ".env")
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -178,9 +188,18 @@ async def chat(request: ChatRequest):
         )
         text, artifact = extract_artifact(raw)
         return ChatResponse(text=text, artifact_html=artifact)
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.exception("Error in /api/chat")
-        raise HTTPException(status_code=500, detail=str(exc))
+        msg = str(exc)
+        if "All models exhausted" in msg or "rate" in msg.lower():
+            raise HTTPException(
+                status_code=503,
+                detail="All AI providers are temporarily unavailable (rate limit). "
+                       "Please wait a minute and try again.",
+            )
+        raise HTTPException(status_code=500, detail=msg)
 
 
 @app.get("/health")

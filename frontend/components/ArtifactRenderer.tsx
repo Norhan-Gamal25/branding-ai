@@ -12,8 +12,9 @@ const TAILWIND_CDN = '<script src="https://cdn.tailwindcss.com"></' + "script>";
 /**
  * Intercept script injected into every rendered page.
  * - Smooth-scrolls same-page anchors (#section)
- * - Opens external/path links in a new tab (_blank)
- * - Prevents any navigation that would hijack the parent window
+ * - Keeps mailto: links functional
+ * - Blocks every other navigation (href="/", index.html, external URLs)
+ *   so the preview can never leave the page or hijack the parent window
  */
 const INTERCEPT_SCRIPT = `
 <script>
@@ -21,17 +22,18 @@ const INTERCEPT_SCRIPT = `
   function handleClick(e){
     var el = e.target.closest('a[href]');
     if(!el) return;
-    var href = el.getAttribute('href') || '';
+    var href = (el.getAttribute('href') || '').trim();
     if(href.startsWith('#')){
       e.preventDefault();
       var target = document.querySelector(href);
       if(target) target.scrollIntoView({behavior:'smooth'});
       return;
     }
+    if(href.startsWith('mailto:')) return;
     e.preventDefault();
-    window.open(href,'_blank','noopener,noreferrer');
   }
   document.addEventListener('click', handleClick, true);
+  document.addEventListener('submit', function(e){ e.preventDefault(); }, true);
 })();
 <\/script>`;
 

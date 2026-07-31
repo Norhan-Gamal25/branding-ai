@@ -159,6 +159,17 @@ section backgrounds dark/surface so the page has rhythm.
    (48px), h2.g-text, short paragraph, mailto .btn-primary button.
 7. FOOTER .section-surface: brand icon + name + tagline + © current year.
 
+=== 3b. INTERACTIONS (buttons must NEVER navigate anywhere) ===
+- Every CTA/button MUST be <button type="button"> — NEVER an <a> tag with
+  href="/", href="index.html", href="#", or any real path/URL. A link like that
+  hijacks the preview iframe to the app's main page.
+- Navigation links in the nav bar = in-page anchors ONLY (href="#hero",
+  href="#about", href="#features", href="#contact").
+- The CONTACT CTA = a mailto: link (<a href="mailto:...">) or a <button
+  type="button">. NEVER a <form> — a form submit reloads/navigates the page.
+- No href="#" anywhere. No onclick="location=...", no window.open, no JS that
+  changes the URL.
+
 === 4. CUSTOM CSS CLASSES (define ALL of these in <style>) ===
 (compute real R,G,B decimals from your chosen hex palette)
   .g-text       background:linear-gradient(120deg,var(--primary),var(--secondary)); -webkit-background-clip:text; color:transparent
@@ -383,11 +394,14 @@ def _run_with_fallback(task_factory, model_list: list) -> str:
                     "Skipping %s (%s) — trying next model.",
                     model, err_str[:120],
                 )
-                last_err = e
-                time.sleep(0.3)
-                continue
-            # Unexpected error (auth failure, network error, etc.) — re-raise immediately
-            raise
+            else:
+                logger.exception(
+                    "Unexpected error on %s — falling through to the next model.",
+                    model,
+                )
+            last_err = e
+            time.sleep(0.3)
+            continue
     raise RuntimeError(
         f"All models exhausted. Last error: {last_err}"
     )

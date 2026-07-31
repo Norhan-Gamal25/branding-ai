@@ -11,12 +11,40 @@ interface LivePreviewProps {
   codeString: string;
 }
 
-/** Inject the Tailwind CDN script into the <head> of the HTML document. */
+/** Navigation guard injected into every rendered page:
+ *  - `#hash` links smooth-scroll within the page
+ *  - `mailto:` links keep their default behaviour
+ *  - everything else (href="/", index.html, external URLs, form submits)
+ *    is prevented so the iframe can never leave the preview
+ */
+const NAV_GUARD = `<script>
+(function(){
+  function handleClick(e){
+    var el = e.target.closest('a[href]');
+    if(!el) return;
+    var href = (el.getAttribute('href') || '').trim();
+    if(href.startsWith('#')){
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if(target) target.scrollIntoView({behavior:'smooth'});
+      return;
+    }
+    if(href.startsWith('mailto:')) return;
+    e.preventDefault();
+  }
+  document.addEventListener('click', handleClick, true);
+  document.addEventListener('submit', function(e){ e.preventDefault(); }, true);
+})();
+<\/script>`;
+
+/** Inject the Tailwind CDN script and the navigation guard into the document. */
 function injectTailwind(html: string): string {
   const tailwindTag = `<script src="https://cdn.tailwindcss.com"><\/script>`;
   // If the agent already included the CDN tag, don't double-inject
-  if (html.includes("cdn.tailwindcss.com")) return html;
-  return html.replace(/<\/head>/i, `  ${tailwindTag}\n</head>`);
+  const withTailwind = html.includes("cdn.tailwindcss.com")
+    ? html
+    : html.replace(/<\/head>/i, `  ${tailwindTag}\n</head>`);
+  return withTailwind.replace(/<\/body>/i, `  ${NAV_GUARD}\n</body>`);
 }
 
 export default function LivePreview({ codeString }: LivePreviewProps) {
