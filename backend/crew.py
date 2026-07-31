@@ -510,24 +510,24 @@ class SiteOutput(BaseModel):
 
 # ── Model priority lists ────────────────────────────────────────────────────────
 # Each entry: (model_id, max_tokens)
-# Updated 2025-07-31 — only confirmed active Groq models.
+# Updated 2025-07-31 — verified active models from Groq console.
 # IBM Watsonx commented out until monthly quota resets.
 
 # Agent 1 — PlatformEngineer: needs large output for full HTML pages
 _SITE_MODELS = [
-    ("groq/llama-3.3-70b-versatile",   16000),  # primary — confirmed active
-    ("groq/llama-3.1-8b-instant",       8000),  # 2nd — confirmed active, separate pool
-    ("groq/llama3-70b-8192",            8192),  # 3rd — confirmed active, separate pool
-    ("groq/llama3-8b-8192",             8192),  # 4th — confirmed active, separate pool
+    ("groq/llama-3.3-70b-versatile",      32768),  # primary — 70B, best quality
+    ("groq/openai/gpt-oss-120b",          65536),  # 2nd — 120B OSS via Groq, separate pool
+    ("groq/openai/gpt-oss-20b",           65536),  # 3rd — 20B OSS via Groq, separate pool
+    ("groq/llama-3.1-8b-instant",         32768),  # 4th — 8B, very fast, separate pool
     # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
 ]
 
 # Agent 2 — EthicalStrategyDirector: deepest reasoning first
 _CHAT_MODELS = [
-    ("groq/llama-3.3-70b-versatile",   16000),  # primary — confirmed active
-    ("groq/llama-3.1-8b-instant",       8000),  # 2nd — confirmed active, separate pool
-    ("groq/llama3-70b-8192",            8192),  # 3rd — confirmed active, separate pool
-    ("groq/llama3-8b-8192",             8192),  # 4th — confirmed active, separate pool
+    ("groq/llama-3.3-70b-versatile",      32768),  # primary — 70B, best quality
+    ("groq/openai/gpt-oss-120b",          65536),  # 2nd — 120B OSS via Groq, separate pool
+    ("groq/openai/gpt-oss-20b",           65536),  # 3rd — 20B OSS via Groq, separate pool
+    ("groq/llama-3.1-8b-instant",         32768),  # 4th — 8B, very fast, separate pool
     # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
 ]
 
