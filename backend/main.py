@@ -186,3 +186,20 @@ async def chat(request: ChatRequest):
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/api/debug")
+async def debug():
+    """Diagnose missing environment variables — safe to expose (no secret values returned)."""
+    groq_key   = os.environ.get("GROQ_API_KEY", "")
+    ibm_key    = os.environ.get("IBM_API_KEY", "")
+    ibm_proj   = os.environ.get("IBM_PROJECT_ID", "")
+    return {
+        "GROQ_API_KEY_set":    bool(groq_key),
+        "GROQ_API_KEY_prefix": groq_key[:8] + "..." if groq_key else "MISSING",
+        "IBM_API_KEY_set":     bool(ibm_key),
+        "IBM_PROJECT_ID_set":  bool(ibm_proj),
+        "LITELLM_CACHE":       os.environ.get("LITELLM_CACHE", "not set"),
+        "LITELLM_LOCAL_CACHE": os.environ.get("LITELLM_LOCAL_CACHE", "not set"),
+        "EXPORT_DIR":          os.environ.get("EXPORT_DIR", "not set"),
+    }
