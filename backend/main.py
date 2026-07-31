@@ -188,6 +188,26 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/api/test-crew")
+async def test_crew():
+    """Runs the full CrewAI pipeline with a tiny prompt — returns exact error if it fails."""
+    import asyncio
+    try:
+        result = await asyncio.to_thread(
+            run_site_generation,
+            "A small coffee shop in Cairo called Bun & Bean",
+            "en",
+        )
+        return {"status": "ok", "html_length": len(result), "preview": result[:200]}
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "detail": str(e),
+            "traceback": traceback.format_exc()[-2000:],
+        }
+
+
 @app.get("/api/test-llm")
 async def test_llm():
     """Calls Groq with a tiny prompt — returns the exact error if it fails."""
