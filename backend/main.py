@@ -188,6 +188,28 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/api/test-llm")
+async def test_llm():
+    """Calls Groq with a tiny prompt — returns the exact error if it fails."""
+    import asyncio
+    import litellm
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    if not groq_key:
+        return {"status": "error", "detail": "GROQ_API_KEY not set"}
+    try:
+        response = await asyncio.to_thread(
+            lambda: litellm.completion(
+                model="groq/llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": "Say OK"}],
+                api_key=groq_key,
+                max_tokens=5,
+            )
+        )
+        return {"status": "ok", "reply": response.choices[0].message.content}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+
 @app.get("/api/debug")
 async def debug():
     """Diagnose missing environment variables — safe to expose (no secret values returned)."""
