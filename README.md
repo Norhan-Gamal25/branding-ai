@@ -16,10 +16,10 @@ Entrepreneurs worldwide — especially in underserved emerging markets (MENA, So
 
 Ethical Brand Studio is a full-stack AI web application that lets any entrepreneur — regardless of design or copywriting skill — instantly generate:
 
-- **A production-ready branded landing page** (complete HTML in an IBM BöC-style design language — IBM Plex typography, Carbon palette, flat rectangular geometry, hairline borders; RTL-aware for Arabic/Hebrew/Farsi)
+- **A production-ready branded landing page** (complete HTML in an IBM BöC-style design language — IBM Plex typography, Carbon palette, flat rectangular geometry, hairline borders; RTL-aware for Arabic/Farsi)
 - **An AI Brand Growth Assistant** chat that delivers brand strategy, logo concept directions, content ideas, colour palettes, and visual mockups — all in the user's own language
 
-The platform supports 10+ languages with automatic detection, full RTL layout for Arabic and Hebrew, and hard ethical guardrails that refuse fake scarcity, FOMO tactics, and deceptive marketing.
+The platform supports 10+ languages with automatic detection, full RTL layout for Arabic, and hard ethical guardrails that refuse fake scarcity, FOMO tactics, and deceptive marketing.
 
 ---
 
@@ -64,7 +64,7 @@ Generates complete, pixel-perfect, single-file HTML landing pages in an **IBM B�
 - IBM Plex Sans/Mono typography, Carbon colour system, flat rectangular geometry, hairline borders, generous whitespace — no glow, no glass, no 3D
 - Tailwind CSS + Phosphor Icons + Google Fonts, zero raw SVG
 - Industry-specific dynamic colour palettes (never repeats a scheme)
-- Automatic RTL layout for Arabic, Hebrew, Farsi, Urdu
+- Automatic RTL layout for Arabic, Farsi, Urdu
 - Gold-standard design-system scaffold injected into every task — a token-budgeted
   professional brief covering head assets, Carbon palette table, 7-section flow,
   custom CSS classes, and RTL rules
@@ -107,7 +107,7 @@ The user receives complete, copy-paste-ready post text plus specific photo descr
 | 3 — Agent | `COMPLIANCE_SYSTEM` prompt | LLM-as-gatekeeper semantic final check |
 
 ### Language Detection (`main.py`)
-Unicode-block heuristics detect Arabic, Hebrew, Chinese, Japanese, Korean, Hindi, Thai, French, and Spanish automatically — no external library dependency. Output language and layout direction match the detected input language.
+Unicode-block heuristics detect Arabic, Chinese, Japanese, Korean, Hindi, Thai, French, and Spanish automatically — no external library dependency. Output language and layout direction match the detected input language.
 
 ---
 
@@ -219,7 +219,7 @@ docker compose up --build
 | **Logo Concept Directions** | Ask for a "logo" → get a text-only brief of 3 logo concepts (name + symbol idea + meaning) plus brand strategy — no blank visuals |
 | **Social Content Pack** | Ask for a "social post" → get 3 copy-ready post variants (Hero, Value, Story) with headlines, body copy, hashtags, and photo search suggestions for each |
 | **Colour Palette** | Ask for a "colour palette" → get full swatches + hex codes + usage labels + typography preview |
-| **RTL Layout** | Write your prompt in Arabic, Hebrew, or Farsi — the generated page mirrors to RTL |
+| **RTL Layout** | Write your prompt in Arabic or Farsi — the generated page mirrors to RTL |
 | **Ethical Guardrails** | The platform auto-refuses fake scarcity, FOMO, and deceptive marketing requests |
 | **Download** | Click **Download** on any artifact card to save the HTML |
 
