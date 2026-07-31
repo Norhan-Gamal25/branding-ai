@@ -5,8 +5,8 @@
   "devCommand": "npm run dev",
   "outputDirectory": ".next",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://branding-ai-backend.onrender.com",
-    "NEXT_PUBLIC_BACKEND_URL": "https://branding-ai-backend.onrender.com",
-    "BACKEND_URL": "https://branding-ai-backend.onrender.com"
+    "NEXT_PUBLIC_API_URL": "branding-ai-production.up.railway.app",
+    "NEXT_PUBLIC_BACKEND_URL": "branding-ai-production.up.railway.app",
+    "BACKEND_URL": "branding-ai-production.up.railway.app"
   }
 }
