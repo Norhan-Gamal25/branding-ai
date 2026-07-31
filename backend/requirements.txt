@@ -1,6 +1,7 @@
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
-crewai[tools,litellm]>=0.55.0,<0.200.0
-litellm>=1.40.0,<1.57.0
+# crewai 1.15+ requires litellm >=1.84 — keep the pair in sync
+crewai[tools,litellm]>=1.15.0,<2.0.0
+litellm>=1.84.0,<2.0.0
 pydantic>=2.7.0
 python-dotenv>=1.0.1

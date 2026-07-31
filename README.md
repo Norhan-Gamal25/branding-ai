@@ -47,12 +47,15 @@ The platform supports 10+ languages with automatic detection, full RTL layout fo
 └──────────────────────────────────────────────────────────────────┘
 
                      MODEL FALLBACK LADDER
-        ┌─────────────────────────────────────────────────┐
-        │  1st  groq/llama-3.3-70b-versatile              │
-        │  2nd  groq/llama-3.1-8b-instant                 │
-        │  3rd  groq/deepseek-r1-distill-llama-70b        │
-        │  4th  IBM Watsonx / meta-llama-3-3-70b-instruct │  ← primary IBM tool
-        └─────────────────────────────────────────────────┘
+        ┌──────────────────────────────────────────────────────────┐
+        │  1st  groq/llama-3.3-70b-versatile       (12k TPM pool)  │
+        │  2nd  groq/openai/gpt-oss-120b           (separate pool) │
+        │  3rd  groq/qwen/qwen3.6-27b              (separate pool) │
+        │  4th  openrouter/qwen3-coder-480b-a35b  (free, optional) │
+        │  5th  huggingface/Llama-3.3-70B-Instruct (free, optional)│
+        │  6th  groq/llama-3.1-8b-instant         (small-pool net) │
+        │  7th  openai/gpt-4o-mini               (no daily cap)    │
+        └──────────────────────────────────────────────────────────┘
 ```
 
 ### Agent 1 — PlatformEngineer
@@ -60,8 +63,12 @@ Generates complete, pixel-perfect, single-file HTML landing pages.
 - Tailwind CSS + Phosphor Icons + Google Fonts, zero raw SVG
 - Industry-specific dynamic colour palettes (never repeats a scheme)
 - Automatic RTL layout for Arabic, Hebrew, Farsi, Urdu
-- Gold-standard few-shot HTML scaffold injected into every task
+- Gold-standard design-system scaffold injected into every task — a token-budgeted
+  professional brief covering head assets, industry palette table, 7-section flow,
+  custom CSS classes, and RTL rules
 - Pydantic output validator salvages accidental markdown wrapping
+- Because every Groq model has its own daily token pool, each tier in the ladder is
+  independent — running out of one model doesn't take down the next
 
 ### Agent 2 — EthicalStrategyDirector
 Elite brand strategist, creative director, and ethics guardian — operating at the level of **Pentagram, Wolff Olins, Landor, and Collins**.
@@ -118,8 +125,6 @@ IBM Bob (the AI assistant) was used as the **primary development tool** througho
 - **Debugging** — LiteLLM `cache_breakpoint` Groq compatibility issue was diagnosed and resolved with Bob
 - **Submission preparation** — This README and the final submission checklist were completed with Bob
 
-**IBM Watsonx** (`meta-llama/llama-3-3-70b-instruct` via the Watsonx endpoint) is integrated as the **final safety-net model** in the fallback ladder — the enterprise-grade, no-daily-cap backbone that ensures the platform never goes dark under heavy usage.
-
 ---
 
 ## Tech Stack
@@ -129,8 +134,8 @@ IBM Bob (the AI assistant) was used as the **primary development tool** througho
 | Frontend | Next.js 14 · React 18 · Tailwind CSS 3 · TypeScript |
 | Backend | FastAPI · Uvicorn · Python 3.11 |
 | AI Orchestration | CrewAI (multi-agent pipeline) |
-| LLM — Primary | Groq (llama-3.3-70b-versatile, llama-3.1-8b-instant, deepseek-r1-distill-llama-70b) |
-| LLM — Fallback | **IBM Watsonx** (meta-llama/llama-3-3-70b-instruct) |
+| LLM — Primary | Groq (llama-3.3-70b-versatile, gpt-oss-120b, qwen3.6-27b, llama-3.1-8b-instant) |
+| LLM — Fallback | **OpenRouter** (free qwen3-coder-480b) → **Hugging Face** (free Llama-3.3-70B) → **OpenAI** (gpt-4o-mini) |
 | Artifact Rendering | Sandboxed `<iframe srcDoc>` — zero XSS risk |
 | Containerisation | Docker + Docker Compose |
 | Deployment | Render (backend) · Vercel (frontend) |
@@ -144,7 +149,8 @@ IBM Bob (the AI assistant) was used as the **primary development tool** througho
 - Python 3.11+
 - Node.js 20+
 - A [Groq API key](https://console.groq.com) (free)
-- *(Optional)* IBM Watsonx credentials for the enterprise fallback
+- *(Optional)* An [OpenAI API key](https://platform.openai.com/api-keys) for the final fallback
+- *(Optional)* An [OpenRouter key](https://openrouter.ai/keys) and/or [Hugging Face token](https://huggingface.co/settings/tokens) for extra free-tier fallback capacity
 
 ### 1. Clone & configure
 
@@ -166,7 +172,10 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env — add your GROQ_API_KEY (and IBM_API_KEY / IBM_PROJECT_ID for Watsonx fallback)
+# Edit .env — add your GROQ_API_KEY (and OPENAI_API_KEY for the final fallback;
+# OPENROUTER_API_KEY / HF_API_KEY are optional free-tier fallbacks)
+
+python check_credentials.py  # optional — verifies every configured provider
 
 uvicorn main:app --reload --port 8000
 ```
@@ -247,9 +256,9 @@ branding-ai/
 | Variable | Required | Description |
 |---|---|---|
 | `GROQ_API_KEY` | Yes | Groq API key — primary LLM provider |
-| `IBM_API_KEY` | Optional | IBM Watsonx API key — enterprise fallback |
-| `IBM_PROJECT_ID` | Optional | IBM Watsonx project ID |
-| `IBM_URL` | Optional | Watsonx endpoint (default: `https://us-south.ml.cloud.ibm.com`) |
+| `OPENAI_API_KEY` | Optional | OpenAI API key — final fallback (gpt-4o-mini), no daily cap |
+| `OPENROUTER_API_KEY` | Optional | OpenRouter key — adds free qwen3-coder-480b to the ladder; leave empty to skip |
+| `HF_API_KEY` | Optional | Hugging Face token — adds free Llama-3.3-70B-Instruct to the ladder; leave empty to skip |
 
 ### Frontend (`frontend/.env.local`)
 
