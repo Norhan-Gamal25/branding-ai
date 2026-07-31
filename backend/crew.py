@@ -569,16 +569,20 @@ def _build_llm(model: str, max_tokens: int) -> LLM:
 
 def _is_skippable_error(err_str: str) -> bool:
     """
-    Return True for errors that mean 'this model is unavailable â€” try the next one'.
-    Covers: rate limits, decommissioned/deleted models, and invalid model IDs.
+    Return True for errors that mean 'this model is unavailable — try the next one'.
+    Covers: rate limits, quota exhaustion, decommissioned/deleted models, invalid model IDs.
     """
     markers = (
-        # Rate limit
-        "rate_limit_exceeded", "RateLimitError", "429", "Too Many Requests",
+        # Rate limit / quota
+        "rate_limit_exceeded", "ratelimiterror", "429", "too many requests",
+        "token_quota_reached", "quota", "exceeded",
+        # IBM Watsonx quota / auth issues — treat as skippable so Groq still runs
+        "watsonxexception", "403",
         # Model decommissioned / not found
         "decommissioned", "model_decommissioned", "does not exist",
-        "model not found", "invalid model", "400", "Bad Request",
-        "No such model", "not supported",
+        "model not found", "invalid model", "no such model", "not supported",
+        # Generic bad request from any provider
+        "bad request",
     )
     low = err_str.lower()
     return any(m.lower() in low for m in markers)
@@ -587,8 +591,7 @@ def _is_skippable_error(err_str: str) -> bool:
 def _run_with_fallback(task_factory, model_list: list) -> str:
     """
     Try each model in model_list in order.
-    Skips to the next model on rate limits AND on decommissioned/invalid model errors.
-    IBM Watsonx is always the last entry â€” enterprise-grade, never rate-limited.
+    Skips to the next model on rate limits, quota errors, and unavailable models.
     Raises RuntimeError only if every model in the list fails.
     """
     last_err = None
@@ -610,16 +613,17 @@ def _run_with_fallback(task_factory, model_list: list) -> str:
             err_str = str(e)
             if _is_skippable_error(err_str):
                 logger.warning(
-                    "Skipping %s (%s) â€” trying next model.",
-                    model, err_str[:120],
+                    "Skipping %s (%s) — trying next model.",
+                    model, err_str[:200],
                 )
                 last_err = e
-                time.sleep(0.3)
+                time.sleep(2)   # give the API a moment before retrying next model
                 continue
-            # Unexpected error (auth failure, network error, etc.) â€” re-raise immediately
+            # Unexpected error — log and re-raise immediately
+            logger.error("Non-skippable error on %s: %s", model, err_str[:300])
             raise
     raise RuntimeError(
-        f"All models exhausted (Groq + IBM Watsonx). Last error: {last_err}"
+        f"All models exhausted. Last error: {last_err}"
     )
 
 
