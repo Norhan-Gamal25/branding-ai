@@ -510,26 +510,24 @@ class SiteOutput(BaseModel):
 
 # ── Model priority lists ────────────────────────────────────────────────────────
 # Each entry: (model_id, max_tokens)
-# Groq models each have SEPARATE daily token pools — exhausting one doesn't
-# affect the others.
-# deepseek-r1-distill-llama-70b was decommissioned by Groq on 2025-07-31 — removed.
+# Updated 2025-07-31 — only confirmed active Groq models.
 # IBM Watsonx commented out until monthly quota resets.
 
 # Agent 1 — PlatformEngineer: needs large output for full HTML pages
 _SITE_MODELS = [
-    ("groq/llama-3.3-70b-versatile",           16000),  # primary — best quality
-    ("groq/llama-3.1-8b-instant",               8000),  # 2nd — separate pool, very fast
-    ("groq/llama-3.1-70b-versatile",           16000),  # 3rd — separate pool, high quality
-    ("groq/gemma2-9b-it",                       8000),  # 4th — separate pool, reliable
+    ("groq/llama-3.3-70b-versatile",   16000),  # primary — confirmed active
+    ("groq/llama-3.1-8b-instant",       8000),  # 2nd — confirmed active, separate pool
+    ("groq/llama3-70b-8192",            8192),  # 3rd — confirmed active, separate pool
+    ("groq/llama3-8b-8192",             8192),  # 4th — confirmed active, separate pool
     # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
 ]
 
 # Agent 2 — EthicalStrategyDirector: deepest reasoning first
 _CHAT_MODELS = [
-    ("groq/llama-3.3-70b-versatile",           16000),  # primary — best instruction-following
-    ("groq/llama-3.1-8b-instant",               8000),  # 2nd — 500k TPD safety net
-    ("groq/llama-3.1-70b-versatile",           16000),  # 3rd — separate pool, high quality
-    ("groq/gemma2-9b-it",                       8000),  # 4th — separate pool, reliable
+    ("groq/llama-3.3-70b-versatile",   16000),  # primary — confirmed active
+    ("groq/llama-3.1-8b-instant",       8000),  # 2nd — confirmed active, separate pool
+    ("groq/llama3-70b-8192",            8192),  # 3rd — confirmed active, separate pool
+    ("groq/llama3-8b-8192",             8192),  # 4th — confirmed active, separate pool
     # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
 ]
 
