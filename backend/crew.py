@@ -508,25 +508,24 @@ class SiteOutput(BaseModel):
         return stripped
 
 
-# â”€â”€ Model priority lists â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Model priority lists ─────────────────────────────────────────────────────
 # Each entry: (model_id, max_tokens)
-# Groq models each have SEPARATE daily token pools â€” exhausting one doesn't
-# affect the others. IBM Watsonx is last: enterprise-grade with no daily cap.
+# max_tokens kept at 8000 to stay within Groq free-tier TPM limits.
+# deepseek-r1-distill-llama-70b decommissioned by Groq — removed.
+# IBM Watsonx is last: enterprise-grade fallback when Groq pools exhausted.
 
-# Agent 1 â€” PlatformEngineer: needs large output for full HTML pages
+# Agent 1 — PlatformEngineer
 _SITE_MODELS = [
-    ("groq/llama-3.3-70b-versatile",               16000),  # primary â€” best quality
-    ("groq/llama-3.1-8b-instant",                   8000),  # 2nd â€” fresh pool, very fast
-    ("groq/deepseek-r1-distill-llama-70b",         16000),  # 3rd â€” separate pool, strong output
-    ("watsonx/meta-llama/llama-3-3-70b-instruct",  16000),  # 4th â€” IBM enterprise, no daily cap
+    ("groq/llama-3.3-70b-versatile",              8000),  # primary — best quality
+    ("groq/llama-3.1-8b-instant",                 4000),  # 2nd — separate pool, very fast
+    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise fallback
 ]
 
-# Agent 2 â€” EthicalStrategyDirector: deepest reasoning first
+# Agent 2 — EthicalStrategyDirector
 _CHAT_MODELS = [
-    ("groq/llama-3.3-70b-versatile",               16000),  # primary â€” best instruction-following
-    ("groq/llama-3.1-8b-instant",                   8000),  # 2nd â€” 500k TPD safety net
-    ("groq/deepseek-r1-distill-llama-70b",         16000),  # 3rd â€” strong reasoning
-    ("watsonx/meta-llama/llama-3-3-70b-instruct",  16000),  # 4th â€” IBM enterprise, no daily cap
+    ("groq/llama-3.3-70b-versatile",              8000),  # primary — best quality
+    ("groq/llama-3.1-8b-instant",                 4000),  # 2nd — separate pool, very fast
+    ("watsonx/meta-llama/llama-3-3-70b-instruct", 8000),  # 3rd — IBM enterprise fallback
 ]
 
 
