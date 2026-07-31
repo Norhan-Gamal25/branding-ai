@@ -220,16 +220,17 @@ class SiteOutput(BaseModel):
 # Groq models each have SEPARATE daily token pools â€" exhausting one doesn't
 # affect the others. OpenAI is last: reliable, no daily token cap.
 
-# Prompt with the rich scaffold is ~3,600 tokens (scaffold 2,800 + system ~800).
-# Budget for the strongest Groq model (llama-3.3-70b-versatile, 12k TPM):
+# Prompt with the rich scaffold is ~3,600 tokens (scaffold ~1,600 + system ~800 +
+# user content). Budget for the strongest Groq model (llama-3.3-70b-versatile, 12k TPM):
 #   3600 (prompt) + 5000 (output) = 8600 < 12,000 ✓
+# gpt-oss-120b has only 8k TPM, so it gets max_tokens=4000 (3600 + 4000 = 7600 < 8k ✓).
 # Every Groq model has a SEPARATE daily token pool — exhausting one doesn't
 # affect the others. OpenRouter + HuggingFace are optional free-tier fallbacks
 # (skipped automatically when their API key is missing). OpenAI stays last:
 # reliable, no daily token cap.
 _SITE_MODELS = [
     ("groq/llama-3.3-70b-versatile",      5000),  # 12k TPM pool — primary
-    ("groq/openai/gpt-oss-120b",          5000),  # separate pool, strongest new Groq model
+    ("groq/openai/gpt-oss-120b",          4000),  # separate pool; TPM only 8k so keep output ≤4k
     ("groq/qwen/qwen3.6-27b",             4000),  # separate pool
     ("openrouter/google/gemma-4-26b-a4b-it:free", 6000),  # free on OpenRouter (needs OPENROUTER_API_KEY)
     ("openrouter/poolside/laguna-s-2.1:free",   5000),  # free on OpenRouter (backup)
@@ -240,7 +241,7 @@ _SITE_MODELS = [
 
 _CHAT_MODELS = [
     ("groq/llama-3.3-70b-versatile",      5000),
-    ("groq/openai/gpt-oss-120b",          5000),
+    ("groq/openai/gpt-oss-120b",          4000),
     ("groq/qwen/qwen3.6-27b",             4000),
     ("openrouter/google/gemma-4-26b-a4b-it:free", 6000),
     ("openrouter/poolside/laguna-s-2.1:free",   5000),
@@ -479,8 +480,11 @@ def _make_ethical_strategy_director(llm: LLM) -> Agent:
             "When a visual asset is requested â€” logo, social post, palette, business card â€” "
             "produce a polished, self-contained HTML document at the quality level of work "
             "produced by the world's top brand identity studios (Pentagram, Wolff Olins, "
-            "Landor, Collins). Use Tailwind CSS, CSS shapes (border-radius, clip-path, "
-            "layered divs, transforms), and Phosphor Icons. "
+            "Landor, Collins). Build ALL styling from an embedded <style> block and inline "
+            "styles in PLAIN CSS so the page renders perfectly even with external CDNs "
+            "(Tailwind, icon fonts, Google Fonts) blocked by the preview sandbox. CSS shapes "
+            "(border-radius, clip-path, layered divs, transforms) + Phosphor Icons as "
+            "enhancement only. " 
             "Wrap the ENTIRE HTML document in ```html\\n...\\n``` fences. "
             "NO raw hand-drawn SVG paths ever.\n\n"
             f"{_SVG_BAN}"
@@ -499,50 +503,86 @@ def _make_ethical_strategy_director(llm: LLM) -> Agent:
 # Concrete templates produce dramatically better output than written rules alone.
 
 _ARTIFACT_LOGO = """
-=== GOLD-STANDARD LOGO IDENTITY SYSTEM ===
+=== GOLD-STANDARD LOGO IDENTITY SYSTEM — ZERO-DEPENDENCY EDITION ===
 Produce ONE self-contained HTML page (wrapped in ```html...``` fences) presenting a
-world-class identity system in the spirit of Google, Microsoft, Amazon, Airbnb, or Nike.
+world-class logo identity in the spirit of Google, Microsoft, Amazon, Airbnb, or Nike.
+The page is a dramatic brand-reveal: a big hero lockup plus concept story — like a
+creative director pitching the logo to the client.
 
-STUDY HOW THE GREATS CONSTRUCT MARKS:
-  Google:    pure wordmark — the LOGO IS THE TYPOGRAPHY; each letter a distinct
-             hue, friendly rounded geometric sans (Product Sans-like).
+>>> HARD RULE 0 — THE PAGE MUST RENDER PERFECTLY WITH EVERY EXTERNAL RESOURCE BLOCKED <<<
+The preview sandbox may block Tailwind CDN, icon fonts, and Google Fonts. A logo that
+depends on them goes BLANK. Therefore:
+- Build the ENTIRE design from a <style> block + inline style="" attributes using
+  PLAIN CSS (flex, grid, transforms, gradients, borders, shadows). Do NOT build the
+  layout or the SYMBOL from Tailwind utility classes, and NEVER let the symbol's
+  visibility depend on an external icon font.
+- Fonts: Google Fonts @import is a PROGRESSIVE ENHANCEMENT only. Every font-family
+  must carry a system fallback: font-family:'Poppins', system-ui, -apple-system,
+  'Segoe UI', Arial, sans-serif. If the font fails, the page still looks designed.
+- The SYMBOL must be visible as CSS shapes + background colours alone — give every
+  symbol div an explicit background. Text must never disappear.
+- Motion must be pure CSS (@keyframes). No JS required anywhere.
+
+STUDY HOW THE GREATS CONSTRUCT MARKS (keep the CONCEPT alive in text):
+  Google:    pure wordmark — the LOGO IS THE TYPOGRAPHY; each letter a distinct hue.
   Microsoft: symbol-only — 4 flat squares in a 2x2 grid, each a brand colour,
-             sitting at staggered 0/25/50/75% baselines.
-  Amazon:    bold humanist-sans wordmark + a smile ARC beneath from first to last
-             letter (a-to-z). The arc is the entire brand idea.
-  Airbnb:    custom rounded symbol (inverted heart) + rounded wordmark — symbol and
-             type share one rounded-corner design language.
-  Apple:     pure geometric symbol (bitten circle) + clean sans wordmark.
+             staggered 0/25/50/75% baselines.
+  Amazon:    bold wordmark + a smile ARC beneath from first to last letter (a-to-z).
+  Airbnb:    custom rounded symbol + rounded wordmark sharing one corner-radius
+             design language.
+  Apple:     pure geometric symbol + clean sans wordmark.
 
-=== SIGNATURE MARK RECIPES — build the symbol with these, NEVER an icon-in-a-circle ===
+=== SIGNATURE MARK RECIPES — PLAIN CSS so they ALWAYS render ===
 R1 Microsoft-tile: 4 equal divs in a 2x2 grid (16px gap), each a DIFFERENT brand
    colour, border-radius 4px, subtle 2px darker bottom edge for depth.
 R2 Google-wordmark: brand name as one wordmark where EACH LETTER (or key syllable)
-   is a <span> with its own hue from the palette, in a rounded geometric sans
-   (Poppins / Outfit / Plus Jakarta Sans). Big, bold, immaculate tracking.
+   is a <span> with its own hue, in a rounded geometric sans. Big, bold,
+   immaculate tracking.
 R3 Amazon-smile: bold wordmark + ARC underneath — div { width:60%; height:14px;
    border-bottom:4px solid var(--primary); border-radius:0 0 24px 24px;
-   margin:2px auto 0; } The arc spans under the whole name.
+   margin:2px auto 0; }
 R4 Geometric mark: layer 2-3 CSS shapes (rotated square + circle + ring) via
-   transform / box-shadow / border / clip-path so the SHAPE is the hero. A
-   Phosphor icon may sit at the CENTRE as the semantic nucleus.
-R5 Two-tone badge: rounded-square (radius 26%) split diagonally (rotated overlay
-   div or linear-gradient), Phosphor icon or initial overlaid, soft offset shadow.
+   transform / box-shadow / border so the SHAPE is the hero; an optional glyph
+   (a styled letter, NOT an external icon) may sit at the CENTRE as the nucleus.
+R5 Two-tone badge: rounded-square (radius 26%) split diagonally via
+   linear-gradient, glyph overlaid, soft offset shadow.
 
-=== THE PRESENTATION (one HTML page, 4 sections) ===
+=== THE CONCEPT (always deliver this in TEXT — the ideas are the deliverable) ===
+Before the HTML, write a section titled "LOGO CONCEPT DIRECTIONS" with exactly THREE
+distinct logo concepts. For each: the name, the symbol idea in one vivid sentence, and
+the one-line meaning behind it. Example entry:
+  1. "The Raised Seed" — a layered geometric mark of a growing hexagon with a golden
+     drop nucleus; meaning: a 40-year family root pushing upward into a fresh market.
+This text is the heart of the response: it must stand alone as a complete logo brief
+even if the HTML visual below is never opened.
+
+=== THE PRESENTATION (one HTML page, 5 sections) ===
+0. HERO — dramatic stage: dark brand base, huge lockup (symbol + wordmark +
+   tracked tagline), and under it ONE italic "mark rationale" line explaining what
+   the symbol means (e.g. "the raised seed — growth rooted in heritage"). This text
+   is the CONCEPT: it must deliver the brand story even if the reader never scrolls.
 1. SYMBOL MARK alone at 4 sizes (120/64/40/18px favicon) on a neutral card —
    proves scalability. The symbol MUST be a genuinely CONSTRUCTED mark from a
-   recipe above. NEVER a Phosphor icon pasted into a plain circle. NEVER
-   initials in a rounded box.
-2. WORDMARK alone — a Google Fonts typeface with real personality; show it
-   dark-on-light AND light-on-dark; wrap ONE letter/syllable in
-   <span class="accent-letter"> for a signature colour moment. Set
-   letter-spacing (tight -0.03em or wide 0.06em) and weight 700-900 deliberately.
+   recipe above. NEVER a plain icon pasted into a circle. NEVER initials in a
+   rounded box.
+2. WORDMARK alone — a personality font; show it dark-on-light AND light-on-dark;
+   wrap ONE letter/syllable in <span class="accent-letter"> for a signature
+   colour moment. Set letter-spacing (tight -0.03em or wide 0.06em) and weight
+   700-900 deliberately.
 3. PRIMARY LOCKUP — symbol + wordmark side-by-side on THREE panels: dark base /
-   white / brand-primary colour. Under the wordmark on the dark panel put the
-   tagline (uppercase, tracked).
+   white / brand-primary colour; the symbol recoloured for contrast on each panel;
+   tagline (uppercase, tracked) under the wordmark on the dark panel.
 4. COLOUR SYSTEM BAR — Primary / Secondary / Accent / Base-Dark swatches with hex
    codes + usage labels (CTAs / gradient pair / pop accent / base type).
+
+=== "MIND-BLOWING" MOTION — pure CSS, subtle and premium ===
+- @keyframes shimmer: a soft diagonal light sweep across the hero symbol
+  (pseudo-element with linear-gradient + translateX loop, 3-4s ease-in-out
+  infinite).
+- @keyframes float: the hero symbol drifts up 8px and back (5s ease-in-out
+  infinite) — a living logo, not a static picture.
+- Panels lift on hover (transform:translateY(-4px) + deepened shadow); colour
+  swatches scale 1.05. Respect prefers-reduced-motion.
 
 === TYPOGRAPHY EXCELLENCE (what makes Google/Amazon read "designed") ===
 - Pick a display font with real personality for the industry: honey/heritage →
@@ -551,12 +591,15 @@ R5 Two-tone badge: rounded-square (radius 26%) split diagonally (rotated overlay
 - Wordmark techniques: gradient text (background-clip:text), per-letter hues,
   1px outlined (text-stroke) letter, or a coloured full-stop accent glyph.
 - Arabic/RTL brands: use a Google Arabic font (Cairo, Tajawal, Reem Kufi, Amiri,
-  Aref Ruqaa) and keep <html dir="rtl">.
+  Aref Ruqaa) and keep <html dir="rtl">; remember system fallbacks for those too.
 
 === QUALITY BAR ===
+- THE PAGE MUST BE WRITTEN OUT IN FULL. FORBIDDEN anywhere: "..." placeholder
+  comments, "<!-- ... -->", "/* ... */", "TODO", "etc", "Sections 0-4", "lorem".
+  If the response would be too long, the model MUST still write every section
+  completely — never abbreviate a section to a comment.
 - Neutral canvas (e.g. #f2f2f5, not plain white); consistent radii and spacing.
-- :root CSS vars for every colour + RGB triplets. Tailwind CDN + Phosphor Icons
-  CSS + Google Fonts @import in <head>; tailwind.config mapped to the vars.
+- :root CSS vars for every colour + RGB triplets.
 - Replace EVERY placeholder with real brand values from the business context.
 - Output the ENTIRE HTML inside ```html ... ``` fences. No raw <svg>/<path> tags.
 """
@@ -740,11 +783,17 @@ def make_chat_task(
            "     (2) Wordmark dark-on-light AND light-on-dark, "
            "     (3) Full lockup on dark bg / light bg / brand-colour bg, "
            "     (4) Colour system bar with hex codes and usage labels. "
+           "     CRITICAL: build ALL layout + the symbol from an embedded <style> block "
+           "     and inline styles in PLAIN CSS — the page must render fully with Tailwind "
+           "     CDN / icon fonts / Google Fonts all blocked (the preview sandbox may "
+           "     block them). Give every symbol div an explicit background. Fonts need "
+           "     system fallbacks. Include a one-line mark-rationale under the hero lockup. "
            "     Symbol = CONSTRUCTED from a signature recipe (Microsoft-style 4-colour "
            "     tile, Google-style per-letter wordmark, Amazon-style smile arc, or layered "
            "     geometric shapes) — NEVER a plain Phosphor icon pasted into a circle, "
            "     NEVER initials in a rounded box. "
-           "     Wordmark = precision Google Font + selective accent on 1 letter.\n"
+           "     Wordmark = precision Google Font + selective accent on 1 letter. "
+           "     Add pure-CSS keyframe motion (shimmer sweep + float) to the hero.\n"
             "   - For SOCIAL POST: do NOT generate any HTML. Deliver a plain-text CONTENT PACK: "
             "     3 post copy variants (Post 1 Hero/Brand Statement, Post 2 Value/Feature, "
             "     Post 3 Community/Story). For each post: headline, body copy (2-4 sentences), "
@@ -780,6 +829,58 @@ def make_chat_task(
     )
 
 
+def _strip_stubbed_artifact(resp: str) -> str:
+    """Remove ```html``` blocks that are stubbed out with placeholder comments
+    (e.g. '/* ... */', '<!-- ... -->', 'Sections 0-4') or truncated by a token
+    cap (an opened ```html fence with no closing fence, or a bare <!DOCTYPE html
+    with no </html>). A stubbed or truncated page renders blank or leaks raw code;
+    the concept text is always kept."""
+    pattern = re.compile(r"```(?:html)?\n([\s\S]*?)```")
+    stub_markers = (
+        "sections 0-4",
+        "sections 1-4",
+        "section 0-4",
+        "section 1-4",
+        "/* ... */",
+        "/* ... layout",
+        "/* ... animations",
+        "<!-- ... -->",
+        "lorem",
+        "todo:",
+        "// ...",
+    )
+
+    def _is_stub(html: str) -> bool:
+        low = html.lower()
+        has_markers = any(m in low for m in stub_markers)
+        has_ellipsis = "..." in low
+        has_comment = "<!--" in low or "/*" in low
+        if len(html) < 700 and (has_ellipsis or has_comment):
+            return True
+        return has_markers and (has_ellipsis or has_comment)
+
+    hits = list(pattern.finditer(resp))
+    for m in hits:
+        html = m.group(1)
+        if _is_stub(html):
+            resp = resp.replace(m.group(0), "")
+
+    if "```html" in resp:
+        open_idx = resp.index("```html")
+        close_match = re.search(r"```", resp[open_idx + 7 :])
+        if not close_match:
+            resp = resp[:open_idx]
+
+    if "```html" not in resp and re.search(r"<!DOCTYPE html", resp, re.IGNORECASE):
+        doc_match = re.search(r"<!DOCTYPE html", resp, re.IGNORECASE)
+        after = resp[doc_match.start() :]
+        if not re.search(r"</html>", after, re.IGNORECASE):
+            resp = resp[: doc_match.start()]
+
+    resp = re.sub(r"\n{3,}", "\n\n", resp).strip()
+    return resp
+
+
 def run_chat(
     user_message: str,
     business_context: str,
@@ -790,5 +891,6 @@ def run_chat(
         task  = make_chat_task(user_message, business_context, chat_history, agent)
         return task, agent
 
-    return _run_with_fallback(factory, _CHAT_MODELS)
+    resp = _run_with_fallback(factory, _CHAT_MODELS)
+    return _strip_stubbed_artifact(resp)
 
