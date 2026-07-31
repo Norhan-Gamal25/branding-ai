@@ -501,46 +501,64 @@ def _make_ethical_strategy_director(llm: LLM) -> Agent:
 _ARTIFACT_LOGO = """
 === GOLD-STANDARD LOGO IDENTITY SYSTEM ===
 Produce ONE self-contained HTML page (wrapped in ```html...``` fences) presenting a
-world-class identity system — NOT an icon in a box. Four components:
+world-class identity system in the spirit of Google, Microsoft, Amazon, Airbnb, or Nike.
 
-1. SYMBOL MARK — a distinctive geometric/abstract icon shown at 4 sizes (120/64/40/18px)
-   to prove scalability. Built ONLY from layered CSS div shapes (border-radius / clip-path /
-   rotate / box-shadow) + a Phosphor icon at the centre as the semantic nucleus.
-   Shape MUST match the industry:
-     Tech/Fintech: clip-path hexagon or chamfered diamond | Wellness/Organic: circle with inner offset ring
-     Luxury/Fashion: thin rectangular frame with one diagonal cut | Food/Cafe: rounded square tilted 45°
-     Education: layered shield or book trapezoid
-   NEVER "initials in a rounded square".
-2. WORDMARK — the brand name in a precisely-chosen Google Font, shown dark-on-light AND
-   light-on-dark, with ONE letter wrapped in <span class="accent-letter"> for a signature
-   colour moment. Set letter-spacing (tight -0.03em or wide 0.06em) and weight 700-900.
-3. PRIMARY LOCKUP — symbol + wordmark side by side, presented on THREE backgrounds:
-   dark base / white / brand-primary colour. Label each panel with its background.
-4. COLOUR SYSTEM BAR — Primary / Secondary / Accent / Base-Dark swatches with hex codes
-   + usage labels (CTAs, gradient pair, pop accent, base type).
+STUDY HOW THE GREATS CONSTRUCT MARKS:
+  Google:    pure wordmark — the LOGO IS THE TYPOGRAPHY; each letter a distinct
+             hue, friendly rounded geometric sans (Product Sans-like).
+  Microsoft: symbol-only — 4 flat squares in a 2x2 grid, each a brand colour,
+             sitting at staggered 0/25/50/75% baselines.
+  Amazon:    bold humanist-sans wordmark + a smile ARC beneath from first to last
+             letter (a-to-z). The arc is the entire brand idea.
+  Airbnb:    custom rounded symbol (inverted heart) + rounded wordmark — symbol and
+             type share one rounded-corner design language.
+  Apple:     pure geometric symbol (bitten circle) + clean sans wordmark.
 
-CSS skeleton you MUST use (fill in real values, derive RGB triplets from hex):
-  :root { --primary:#...; --secondary:#...; --accent:#...; --dark:#...; --light:#...;
-          --p-rgb:R,G,B; --s-rgb:R,G,B; --a-rgb:R,G,B; }
-  .symbol{width:var(--s,80px);height:var(--s,80px);position:relative;display:flex;align-items:center;justify-content:center}
-  .symbol-outer{position:absolute;inset:0;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:OUTER;/* or clip-path */}
-  .symbol-inner{position:absolute;width:58%;height:58%;border-radius:INNER;background:rgba(var(--a-rgb),0.22);border:2px solid rgba(255,255,255,.3)}
-  .symbol-icon{position:relative;z-index:2;font-size:calc(var(--s,80px)*.36);color:#fff}
-  .wordmark{font-family:'DISPLAY_FONT';font-weight:800;letter-spacing:TRACKING;line-height:1;white-space:nowrap}
-  .wordmark .accent-letter{color:var(--primary)}
-  .lockup{display:inline-flex;align-items:center;gap:calc(var(--s,80px)*.22)}
-  .tagline{font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(var(--p-rgb),.7);margin-top:5px}
-  .preview-panel{border-radius:24px;padding:52px 48px;display:flex;flex-direction:column;align-items:center;gap:28px}
-  .colour-bar{display:flex;border-radius:18px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.14)}
-  .colour-swatch{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
-  .swatch-hex{font-family:monospace;font-size:13px;font-weight:700}
-Also include: Tailwind CDN, Phosphor Icons CSS, Google Fonts @import (display + UI fonts),
-and a neutral canvas background (e.g. #f2f2f5, not plain white).
+=== SIGNATURE MARK RECIPES — build the symbol with these, NEVER an icon-in-a-circle ===
+R1 Microsoft-tile: 4 equal divs in a 2x2 grid (16px gap), each a DIFFERENT brand
+   colour, border-radius 4px, subtle 2px darker bottom edge for depth.
+R2 Google-wordmark: brand name as one wordmark where EACH LETTER (or key syllable)
+   is a <span> with its own hue from the palette, in a rounded geometric sans
+   (Poppins / Outfit / Plus Jakarta Sans). Big, bold, immaculate tracking.
+R3 Amazon-smile: bold wordmark + ARC underneath — div { width:60%; height:14px;
+   border-bottom:4px solid var(--primary); border-radius:0 0 24px 24px;
+   margin:2px auto 0; } The arc spans under the whole name.
+R4 Geometric mark: layer 2-3 CSS shapes (rotated square + circle + ring) via
+   transform / box-shadow / border / clip-path so the SHAPE is the hero. A
+   Phosphor icon may sit at the CENTRE as the semantic nucleus.
+R5 Two-tone badge: rounded-square (radius 26%) split diagonally (rotated overlay
+   div or linear-gradient), Phosphor icon or initial overlaid, soft offset shadow.
 
-Replace EVERY placeholder (brand icon, outer/inner radii, display+UI fonts, tracking,
-hex codes, RGB triplets, brand-name split for the accent letter, tagline, positioning
-sentence) with real values from the business context.
-Output the ENTIRE HTML inside ```html ... ``` fences. No raw <svg>/<path> tags ever.
+=== THE PRESENTATION (one HTML page, 4 sections) ===
+1. SYMBOL MARK alone at 4 sizes (120/64/40/18px favicon) on a neutral card —
+   proves scalability. The symbol MUST be a genuinely CONSTRUCTED mark from a
+   recipe above. NEVER a Phosphor icon pasted into a plain circle. NEVER
+   initials in a rounded box.
+2. WORDMARK alone — a Google Fonts typeface with real personality; show it
+   dark-on-light AND light-on-dark; wrap ONE letter/syllable in
+   <span class="accent-letter"> for a signature colour moment. Set
+   letter-spacing (tight -0.03em or wide 0.06em) and weight 700-900 deliberately.
+3. PRIMARY LOCKUP — symbol + wordmark side-by-side on THREE panels: dark base /
+   white / brand-primary colour. Under the wordmark on the dark panel put the
+   tagline (uppercase, tracked).
+4. COLOUR SYSTEM BAR — Primary / Secondary / Accent / Base-Dark swatches with hex
+   codes + usage labels (CTAs / gradient pair / pop accent / base type).
+
+=== TYPOGRAPHY EXCELLENCE (what makes Google/Amazon read "designed") ===
+- Pick a display font with real personality for the industry: honey/heritage →
+  Marcellus, Cormorant Garamond; tech → Space Grotesk, Sora; playful → Baloo 2,
+  Fredoka; fashion → Fraunces, Italiana. Body font: a clean sans.
+- Wordmark techniques: gradient text (background-clip:text), per-letter hues,
+  1px outlined (text-stroke) letter, or a coloured full-stop accent glyph.
+- Arabic/RTL brands: use a Google Arabic font (Cairo, Tajawal, Reem Kufi, Amiri,
+  Aref Ruqaa) and keep <html dir="rtl">.
+
+=== QUALITY BAR ===
+- Neutral canvas (e.g. #f2f2f5, not plain white); consistent radii and spacing.
+- :root CSS vars for every colour + RGB triplets. Tailwind CDN + Phosphor Icons
+  CSS + Google Fonts @import in <head>; tailwind.config mapped to the vars.
+- Replace EVERY placeholder with real brand values from the business context.
+- Output the ENTIRE HTML inside ```html ... ``` fences. No raw <svg>/<path> tags.
 """
 
 _ARTIFACT_PALETTE = """
@@ -717,13 +735,16 @@ def make_chat_task(
             "   - Google Fonts via @import â€” pick 2 fonts that define the brand personality precisely\n"
             "   - CSS variables in :root {} for ALL colours AND their RGB triplets for rgba() use\n"
             f"   - {_TAILWIND_EXCELLENCE}\n"
-            "   - For LOGO: produce a FULL LOGO IDENTITY SYSTEM (not just an icon in a box): "
-            "     (1) Symbol mark at 4 sizes (scalability test), "
-            "     (2) Wordmark dark-on-light AND light-on-dark, "
-            "     (3) Full lockup on dark bg / light bg / brand-colour bg, "
-            "     (4) Colour system bar with hex codes and usage labels. "
-            "     Symbol = layered CSS div shapes (border-radius/clip-path/rotate) + Phosphor nucleus. "
-            "     Wordmark = precision Google Font + selective accent on 1 letter. NOT initials in a box.\n"
+           "   - For LOGO: produce a FULL LOGO IDENTITY SYSTEM (not just an icon in a box): "
+           "     (1) Symbol mark at 4 sizes (scalability test), "
+           "     (2) Wordmark dark-on-light AND light-on-dark, "
+           "     (3) Full lockup on dark bg / light bg / brand-colour bg, "
+           "     (4) Colour system bar with hex codes and usage labels. "
+           "     Symbol = CONSTRUCTED from a signature recipe (Microsoft-style 4-colour "
+           "     tile, Google-style per-letter wordmark, Amazon-style smile arc, or layered "
+           "     geometric shapes) — NEVER a plain Phosphor icon pasted into a circle, "
+           "     NEVER initials in a rounded box. "
+           "     Wordmark = precision Google Font + selective accent on 1 letter.\n"
             "   - For SOCIAL POST: do NOT generate any HTML. Deliver a plain-text CONTENT PACK: "
             "     3 post copy variants (Post 1 Hero/Brand Statement, Post 2 Value/Feature, "
             "     Post 3 Community/Story). For each post: headline, body copy (2-4 sentences), "
