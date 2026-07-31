@@ -15,8 +15,8 @@ app = FastAPI(title="Ethical Brand Studio API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -186,62 +186,3 @@ async def chat(request: ChatRequest):
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-
-@app.get("/api/test-crew")
-async def test_crew():
-    """Runs the full CrewAI pipeline with a tiny prompt — returns exact error if it fails."""
-    import asyncio
-    try:
-        result = await asyncio.to_thread(
-            run_site_generation,
-            "A small coffee shop in Cairo called Bun & Bean",
-            "en",
-        )
-        return {"status": "ok", "html_length": len(result), "preview": result[:200]}
-    except Exception as e:
-        import traceback
-        return {
-            "status": "error",
-            "detail": str(e),
-            "traceback": traceback.format_exc()[-2000:],
-        }
-
-
-@app.get("/api/test-llm")
-async def test_llm():
-    """Calls Groq with a tiny prompt — returns the exact error if it fails."""
-    import asyncio
-    import litellm
-    groq_key = os.environ.get("GROQ_API_KEY", "")
-    if not groq_key:
-        return {"status": "error", "detail": "GROQ_API_KEY not set"}
-    try:
-        response = await asyncio.to_thread(
-            lambda: litellm.completion(
-                model="groq/llama-3.1-8b-instant",
-                messages=[{"role": "user", "content": "Say OK"}],
-                api_key=groq_key,
-                max_tokens=5,
-            )
-        )
-        return {"status": "ok", "reply": response.choices[0].message.content}
-    except Exception as e:
-        return {"status": "error", "detail": str(e)}
-
-
-@app.get("/api/debug")
-async def debug():
-    """Diagnose missing environment variables — safe to expose (no secret values returned)."""
-    groq_key   = os.environ.get("GROQ_API_KEY", "")
-    ibm_key    = os.environ.get("IBM_API_KEY", "")
-    ibm_proj   = os.environ.get("IBM_PROJECT_ID", "")
-    return {
-        "GROQ_API_KEY_set":    bool(groq_key),
-        "GROQ_API_KEY_prefix": groq_key[:8] + "..." if groq_key else "MISSING",
-        "IBM_API_KEY_set":     bool(ibm_key),
-        "IBM_PROJECT_ID_set":  bool(ibm_proj),
-        "LITELLM_CACHE":       os.environ.get("LITELLM_CACHE", "not set"),
-        "LITELLM_LOCAL_CACHE": os.environ.get("LITELLM_LOCAL_CACHE", "not set"),
-        "EXPORT_DIR":          os.environ.get("EXPORT_DIR", "not set"),
-    }

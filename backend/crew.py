@@ -508,27 +508,25 @@ class SiteOutput(BaseModel):
         return stripped
 
 
-# ── Model priority lists ────────────────────────────────────────────────────────
+# â”€â”€ Model priority lists â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Each entry: (model_id, max_tokens)
-# Updated 2025-07-31 — verified active models from Groq console.
-# IBM Watsonx commented out until monthly quota resets.
+# Groq models each have SEPARATE daily token pools â€” exhausting one doesn't
+# affect the others. IBM Watsonx is last: enterprise-grade with no daily cap.
 
-# Agent 1 — PlatformEngineer: needs large output for full HTML pages
+# Agent 1 â€” PlatformEngineer: needs large output for full HTML pages
 _SITE_MODELS = [
-    ("groq/llama-3.3-70b-versatile",      32768),  # primary — 70B, best quality
-    ("groq/openai/gpt-oss-120b",          65536),  # 2nd — 120B OSS via Groq, separate pool
-    ("groq/openai/gpt-oss-20b",           65536),  # 3rd — 20B OSS via Groq, separate pool
-    ("groq/llama-3.1-8b-instant",         32768),  # 4th — 8B, very fast, separate pool
-    # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
+    ("groq/llama-3.3-70b-versatile",               16000),  # primary â€” best quality
+    ("groq/llama-3.1-8b-instant",                   8000),  # 2nd â€” fresh pool, very fast
+    ("groq/deepseek-r1-distill-llama-70b",         16000),  # 3rd â€” separate pool, strong output
+    ("watsonx/meta-llama/llama-3-3-70b-instruct",  16000),  # 4th â€” IBM enterprise, no daily cap
 ]
 
-# Agent 2 — EthicalStrategyDirector: deepest reasoning first
+# Agent 2 â€” EthicalStrategyDirector: deepest reasoning first
 _CHAT_MODELS = [
-    ("groq/llama-3.3-70b-versatile",      32768),  # primary — 70B, best quality
-    ("groq/openai/gpt-oss-120b",          65536),  # 2nd — 120B OSS via Groq, separate pool
-    ("groq/openai/gpt-oss-20b",           65536),  # 3rd — 20B OSS via Groq, separate pool
-    ("groq/llama-3.1-8b-instant",         32768),  # 4th — 8B, very fast, separate pool
-    # ("watsonx/meta-llama/llama-3-3-70b-instruct", 16000),  # re-enable when IBM quota resets
+    ("groq/llama-3.3-70b-versatile",               16000),  # primary â€” best instruction-following
+    ("groq/llama-3.1-8b-instant",                   8000),  # 2nd â€” 500k TPD safety net
+    ("groq/deepseek-r1-distill-llama-70b",         16000),  # 3rd â€” strong reasoning
+    ("watsonx/meta-llama/llama-3-3-70b-instruct",  16000),  # 4th â€” IBM enterprise, no daily cap
 ]
 
 
@@ -571,20 +569,16 @@ def _build_llm(model: str, max_tokens: int) -> LLM:
 
 def _is_skippable_error(err_str: str) -> bool:
     """
-    Return True for errors that mean 'this model is unavailable — try the next one'.
-    Covers: rate limits, quota exhaustion, decommissioned/deleted models, invalid model IDs.
+    Return True for errors that mean 'this model is unavailable â€” try the next one'.
+    Covers: rate limits, decommissioned/deleted models, and invalid model IDs.
     """
     markers = (
-        # Rate limit / quota
-        "rate_limit_exceeded", "ratelimiterror", "429", "too many requests",
-        "token_quota_reached", "quota", "exceeded",
-        # IBM Watsonx quota / auth issues — treat as skippable so Groq still runs
-        "watsonxexception", "403",
+        # Rate limit
+        "rate_limit_exceeded", "RateLimitError", "429", "Too Many Requests",
         # Model decommissioned / not found
         "decommissioned", "model_decommissioned", "does not exist",
-        "model not found", "invalid model", "no such model", "not supported",
-        # Generic bad request from any provider
-        "bad request",
+        "model not found", "invalid model", "400", "Bad Request",
+        "No such model", "not supported",
     )
     low = err_str.lower()
     return any(m.lower() in low for m in markers)
@@ -593,7 +587,8 @@ def _is_skippable_error(err_str: str) -> bool:
 def _run_with_fallback(task_factory, model_list: list) -> str:
     """
     Try each model in model_list in order.
-    Skips to the next model on rate limits, quota errors, and unavailable models.
+    Skips to the next model on rate limits AND on decommissioned/invalid model errors.
+    IBM Watsonx is always the last entry â€” enterprise-grade, never rate-limited.
     Raises RuntimeError only if every model in the list fails.
     """
     last_err = None
@@ -615,17 +610,16 @@ def _run_with_fallback(task_factory, model_list: list) -> str:
             err_str = str(e)
             if _is_skippable_error(err_str):
                 logger.warning(
-                    "Skipping %s (%s) — trying next model.",
-                    model, err_str[:200],
+                    "Skipping %s (%s) â€” trying next model.",
+                    model, err_str[:120],
                 )
                 last_err = e
-                time.sleep(2)   # give the API a moment before retrying next model
+                time.sleep(0.3)
                 continue
-            # Unexpected error — log and re-raise immediately
-            logger.error("Non-skippable error on %s: %s", model, err_str[:300])
+            # Unexpected error (auth failure, network error, etc.) â€” re-raise immediately
             raise
     raise RuntimeError(
-        f"All models exhausted. Last error: {last_err}"
+        f"All models exhausted (Groq + IBM Watsonx). Last error: {last_err}"
     )
 
 
