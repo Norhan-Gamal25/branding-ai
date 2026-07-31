@@ -115,86 +115,100 @@ _TAILWIND_EXCELLENCE = (
 # Prompt ~3.2k + output 6k = 9.2k < 12k ✓
 
 _GOLD_SCAFFOLD = """\
-DESIGN SYSTEM — THIS IS YOUR SPECIFICATION. Follow it exactly.
+DESIGN SYSTEM - IBM BÖC (B/OLD) DESIGN LANGUAGE. Build the landing page exactly
+like IBM's own design work: IBM Plex typography, Carbon colour system, flat
+rectangular geometry, hairline borders, generous whitespace. No glow, no glass,
+no 3D, no drop shadows. Everything crisp, precise, engineered.
 
 === 1. DOCUMENT HEAD (must contain all of these) ===
 - <meta charset="UTF-8"> + <meta name="viewport" content="width=device-width, initial-scale=1.0">
 - Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
 - Phosphor Icons CDN: <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"/>
 - <style> block containing:
-    * Google Fonts @import — pick 2 fonts that DEFINE the brand personality
-      (display font for headings, body font for text). Real Google Fonts names only.
+    * Google Fonts @import: 'IBM Plex Sans' (600/700 - display + body) and
+      'IBM Plex Mono' (eyebrow labels, numbers, buttons). Real Google Fonts only.
     * :root{} CSS variables: --base, --surface, --card, --primary, --secondary,
       --text-light, --text-muted AND their RGB triplets (--primary-rgb: R,G,B) for rgba()
     * All custom classes from section 4
 - <script> tailwind.config block: map colors {base, surface, card, primary,
-  secondary} to the CSS vars, set fontFamily {display, body}
+  secondary} to the CSS vars, set fontFamily {display:'IBM Plex Sans', body:'IBM Plex Sans'}
 
-=== 2. COLOUR (pick ONE palette, commit fully) ===
-Choose from this industry table and register every hex in :root{} AND tailwind.config:
-  Luxury/Jewellery: #0a0a1a #c9a84c #f5f0e8   |  Wellness/Organic: #1a3a2a #7aab8a #f2ebe0 #c4714a
-  Tech/SaaS:       #070714 #5c4df5 #00e5ff    |  Food/Cafe:       #1c1008 #e8602c #fdf6ec #f0b429
-  Beauty/Skincare: #3d1a2a #b07080 #fce8e8 #d4af7a | Sport/Fitness: #0f0f0f #b0f030 #3a3a4a
-  Real Estate:     #1a1f2e #8a6a42 #f4f1ec    |  Education:       #0d3349 #e8a820 #ffffff #4db8e8
-  Finance/Legal:   #151520 #1a3a8f #c0c8d8 #c9a44a | Medical:     #0a1628 #00b8d9 #475569
-  Artisan/Heritage:#3b1f0e #a0522d #f8f0e3 #5a6e2e
-Rules: hero = darkest base + gradient overlay; CTA = vivid accent + glow box-shadow;
-cards = glassmorphism rgba(R,G,B,0.08) + backdrop-blur(12px); nav = sticky
-rgba(R,G,B,0.88) + blur(18px); NEVER use Tailwind default colours; alternate
-section backgrounds dark/surface so the page has rhythm.
+=== 2. COLOUR (Carbon neutrals + ONE industry accent - commit fully) ===
+Neutrals (register ALL in :root{}): #161616 (gray-100), #262626 (gray-90),
+#6f6f6f (gray-60), #a8a8a8 (gray-40), #e0e0e0 (gray-20), #f4f4f4 (gray-10), #ffffff.
+Accent - pick ONE + its 100-level tint:
+  Tech/Enterprise #0f62fe (+#edf5ff)  |  Wellness #24a148 (+#defbe6)
+  Luxury #b7862c (+#fdf6e3)           |  Beauty #d02670 (+#ffe1e8)
+  Food #c85a1e (+#fff1e6)             |  Finance #0043ce (+#e8daff)
+  Education #8a3ffc (+#e8daff)        |  Medical #1192e8 (+#edf5ff)
+  Real Estate #6f4e37 (+#f4f0ec)
+Rules: FLAT - solid surfaces, no glassmorphism, no glow, no 3D. Dark sections on
+#161616, light on white, alternate rhythm with gray-10 #f4f4f4. Hairline borders
+1px #e0e0e0 throughout. NEVER use Tailwind default colours.
 
-=== 3. SECTION FLOW (exactly 7 sections, each a DIFFERENT background) ===
-1. STICKY NAV: glass-blur bar. Left: Phosphor icon logo + brand name + small
-   tagline. Right: 3 in-page anchors + .btn-primary CTA.
-2. HERO (#hero) .section-dark: min-h-screen, radial CSS glow behind content,
-   eyebrow pill, h1 with .g-text (clamp 2.8rem→4.5rem, weight 800), one-line
-   subheadline, .btn-primary CTA + optional subtle secondary link.
-3. TRUST BAR .section-surface: flex row of 3-4 items = Phosphor icon + bold
-   stat + small label. Draw ONLY from the business description (real facts).
-4. ABOUT (#about) .section-dark: 2-col grid — left: eyebrow + h2 + 2 short
-   paragraphs; right: 2×2 grid of value .cards (icon + name + one line).
-5. FEATURES (#features) .section-surface: centered heading + auto-fit grid of
-   6 .cards, each = 52px icon box + h3 + 2-sentence description.
-6. CTA/CONTACT (#contact) .section-dark: radial glow, large Phosphor icon
-   (48px), h2.g-text, short paragraph, mailto .btn-primary button.
-7. FOOTER .section-surface: brand icon + name + tagline + © current year.
+=== 3. SECTION FLOW (exactly 7 sections) ===
+1. STICKY NAV: white bar, bottom border 1px #e0e0e0. Left: Phosphor icon +
+   brand name (IBM Plex Sans 600). Right: 3 in-page anchors (.eyebrow) +
+   .btn-primary button.
+2. HERO (#hero) .section-dark: centered eyebrow pill (accent-tint bg + accent
+   text), h1 white .g-headline (IBM Plex Sans 700, clamp 3rem->6rem, tight
+   leading, max-w), short gray-40 subline, .btn-primary + underlined white
+   text-link secondary.
+3. STAT BAR .section-light: grid of 3-4 facts - IBM Plex Mono 700 number in
+   accent + .eyebrow label. Draw ONLY from the business description (real facts).
+4. ABOUT (#about) .section-gray: 2-col grid - left: .eyebrow + h2 + 2 short
+   paragraphs; right: 2x2 grid of .card (icon + name + one line).
+5. FEATURES (#features) .section-light: centered .eyebrow + h2 + 6 .card grid
+   (48px icon box + h3 + 2-sentence description).
+6. CTA/CONTACT (#contact) .section-dark: centered .eyebrow, Phosphor icon
+   (48px), h2.g-headline, gray-40 paragraph, mailto .btn-primary.
+7. FOOTER .section-gray: brand icon + name + .eyebrow tagline + (c) current year.
 
-=== INTERACTION RULES (apply to EVERY section — buttons must never navigate) ===
-- Every CTA/button MUST be <button type="button"> — NEVER an <a> tag with
+=== INTERACTION RULES (apply to EVERY section - buttons must never navigate) ===
+- Every CTA/button MUST be <button type="button"> - NEVER an <a> tag with
   href="/", href="index.html", href="#", or any real path/URL. A link like that
   hijacks the preview iframe to the app's main page.
 - Navigation links in the nav bar = in-page anchors ONLY (href="#hero",
   href="#about", href="#features", href="#contact").
 - The CONTACT CTA = a mailto: link (<a href="mailto:...">) or a <button
-  type="button">. NEVER a <form> — a form submit reloads/navigates the page.
+  type="button">. NEVER a <form> - a form submit reloads/navigates the page.
 - No href="#" anywhere. No onclick="location=...", no window.open, no JS that
   changes the URL.
 
 === 4. CUSTOM CSS CLASSES (define ALL of these in <style>) ===
 (compute real R,G,B decimals from your chosen hex palette)
-  .g-text       background:linear-gradient(120deg,var(--primary),var(--secondary)); -webkit-background-clip:text; color:transparent
-  .card         background:rgba(R,G,B,0.08); backdrop-filter:blur(12px); border:1px solid rgba(R,G,B,0.15); border-radius:20px; transition:transform .25s
-  .card:hover   transform:translateY(-4px); box-shadow:0 16px 48px rgba(R,G,B,0.15)
-  .btn-primary  border-radius:50px; background:var(--primary); box-shadow:0 0 32px rgba(R,G,B,0.45); hover:translateY(-2px)
-  nav           position:sticky; top:0; background:rgba(R,G,B,0.88); backdrop-filter:blur(18px)
-  .section-dark    background:var(--base)
-  .section-surface background:var(--surface)
-  radial glow   position:absolute; background:radial-gradient(ellipse 80% 60% at 50% 40%, rgba(R,G,B,0.18) 0%, transparent 65%)
-  Hex→RGB example: #c9a84c = 201,168,76
+  .g-headline   color:#ffffff; font-weight:700; letter-spacing:-0.02em;
+                line-height:1.05; optional accent: background:linear-gradient(
+                120deg,var(--primary),#a6c8ff); -webkit-background-clip:text;
+                color:transparent - apply to ONE word max
+  .eyebrow      font-family:'IBM Plex Mono'; text-transform:uppercase;
+                font-size:.75rem; letter-spacing:.16em; font-weight:600
+  .card         background:#ffffff; border:1px solid #e0e0e0; border-radius:0;
+                transition:border-color .15s, box-shadow .15s
+  .card:hover   border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-rgb)
+  .btn-primary  background:var(--primary); color:#fff; border:1px solid
+                var(--primary); border-radius:0; font-family:'IBM Plex Mono';
+                text-transform:uppercase; letter-spacing:.08em; font-size:.85rem;
+                padding:.9rem 1.75rem; transition:background .15s
+  .btn-primary:hover background:#0043ce; border-color:#0043ce
+  nav           position:sticky; top:0; background:rgba(255,255,255,.95);
+                border-bottom:1px solid #e0e0e0; backdrop-filter:blur(8px)
+  .section-dark    background:#161616
+  .section-light   background:#ffffff
+  .section-gray    background:#f4f4f4
+  Hex->RGB example: #0f62fe = 15,98,254
 
-=== 5. QUALITY BAR (what "professional" means here) ===
-- Generous, consistent spacing (py-24/py-32), one coherent radius (16-24px),
-  soft shadows, subtle hover motion. No cramped or default-browser styling.
-- Strong typography contrast between display and body fonts.
-- Every section COMPLETE with real copy in the detected language — no Lorem
+=== 5. QUALITY BAR (what "IBM-grade" means here) ===
+- Flat, rectangular (border-radius 0 or 2px), hairline borders, mono uppercase
+  labels, giant tight headlines, generous whitespace (py-24/py-32), consistent
+  max-w-5xl/6xl containers. No glow, no glass, no gradients beyond the permitted
+  single-word headline accent.
+- Every section COMPLETE with real copy in the detected language - no Lorem
   ipsum, no placeholder text, no empty sections, no fake testimonials/ratings.
 - Icons ONLY via <i class="ph ph-NAME">. NEVER <svg>, <path>, <circle>,
   <img>, or external image URLs.
 - RTL languages: <html lang="..." dir="rtl">, text right-aligned, flex/grid
   direction mirrored so the layout reads naturally right-to-left.
-- If any copy is required, invent it in the detected language, brand-accurate.
-
-Output ONLY the complete HTML starting with <!DOCTYPE html>. No markdown fences, no commentary.
 """
 
 
@@ -235,13 +249,14 @@ class SiteOutput(BaseModel):
 # user content). Budget for the strongest Groq model (llama-3.3-70b-versatile, 12k TPM):
 #   3600 (prompt) + 5000 (output) = 8600 < 12,000 ✓
 # gpt-oss-120b has only 8k TPM, so it gets max_tokens=4000 (3600 + 4000 = 7600 < 8k ✓).
+# Site generation needs the full page, so gpt-oss gets 5000 there (it truncated at 4000).
 # Every Groq model has a SEPARATE daily token pool — exhausting one doesn't
 # affect the others. OpenRouter + HuggingFace are optional free-tier fallbacks
 # (skipped automatically when their API key is missing). OpenAI stays last:
 # reliable, no daily token cap.
 _SITE_MODELS = [
     ("groq/llama-3.3-70b-versatile",      5000),  # 12k TPM pool — primary
-    ("groq/openai/gpt-oss-120b",          4000),  # separate pool; TPM only 8k so keep output ≤4k
+    ("groq/openai/gpt-oss-120b",          5000),  # separate pool; TPM 8k but needs headroom for full page
     ("groq/qwen/qwen3.6-27b",             4000),  # separate pool
     ("openrouter/google/gemma-4-26b-a4b-it:free", 6000),  # free on OpenRouter (needs OPENROUTER_API_KEY)
     ("openrouter/poolside/laguna-s-2.1:free",   5000),  # free on OpenRouter (backup)
@@ -291,7 +306,6 @@ def _build_llm(model: str, max_tokens: int) -> LLM:
             api_key=key,
             temperature=0.6,
             max_tokens=max_tokens,
-            caching=False,
         )
 
     if model.startswith("huggingface/"):
@@ -306,7 +320,6 @@ def _build_llm(model: str, max_tokens: int) -> LLM:
             api_key=key,
             temperature=0.6,
             max_tokens=max_tokens,
-            caching=False,
         )
 
     if model.startswith("openai/"):
@@ -321,7 +334,6 @@ def _build_llm(model: str, max_tokens: int) -> LLM:
             api_key=key,
             temperature=0.6,
             max_tokens=max_tokens,
-            caching=False,
         )
 
     groq_key = os.environ.get("GROQ_API_KEY", "").strip()
@@ -479,15 +491,23 @@ def make_site_task(
 def _site_html_is_complete(html: str) -> bool:
     """A generated landing page must be a closed document with a style block and
     the custom classes the scaffold promises — otherwise the preview renders
-    unstyled/blank and looks 'broken' (common when a fallback model truncates)."""
+    unstyled/blank and looks 'broken' (common when a fallback model truncates).
+    Tolerates a markdown ```html fence or a short prose prefix before the doc."""
     low = html.lower()
-    if not (low.startswith("<!doctype") or low.startswith("<html")):
+    start = -1
+    for marker in ("<!doctype", "<html"):
+        idx = low.find(marker)
+        if idx != -1:
+            start = idx
+            break
+    if start == -1:
         return False
-    if "</html>" not in low or "</body>" not in low:
+    tail = low[start:]
+    if "</html>" not in tail or "</body>" not in tail:
         return False
-    if "<style" not in low:
+    if "<style" not in tail:
         return False
-    return ".btn-primary" in low and ".g-text" in low
+    return ".btn-primary" in tail and (".g-text" in tail or ".g-headline" in tail)
 
 
 def run_site_generation(
@@ -516,20 +536,23 @@ def _make_ethical_strategy_director(llm: LLM) -> Agent:
             "'strategies above', 'see below', 'as mentioned', or any phrase implying content "
             "exists outside your current reply. Write EVERY strategy, step, and recommendation "
             "IN FULL inside this single message.\n\n"
-            "When a visual asset is requested â€” logo, social post, palette, business card â€” "
+            "When a visual asset is requested â€” social post, palette, business card â€” "
             "produce a polished, self-contained HTML document at the quality level of work "
             "produced by the world's top brand identity studios (Pentagram, Wolff Olins, "
             "Landor, Collins). Build ALL styling from an embedded <style> block and inline "
             "styles in PLAIN CSS so the page renders perfectly even with external CDNs "
             "(Tailwind, icon fonts, Google Fonts) blocked by the preview sandbox. CSS shapes "
             "(border-radius, clip-path, layered divs, transforms) + Phosphor Icons as "
-            "enhancement only. " 
+            "enhancement only. "
             "Wrap the ENTIRE HTML document in ```html\\n...\\n``` fences. "
             "NO raw hand-drawn SVG paths ever.\n\n"
+            "Every strategy response MUST end with the required 'Focus Group Simulator' "
+            "section (see the task rules) - roleplay 3 distinct potential customers "
+            "reacting to the brand idea.\n\n"
             f"{_SVG_BAN}"
         ),
         backstory=(
-            "World-class brand strategist and creative director. Produces expert strategy, logos (CSS div shapes + Phosphor icon nucleus, full identity system), colour palettes, social content packs, and business cards. Never uses raw SVG. Responds in the user's language. Refuses fake scarcity/FOMO and offers ethical alternatives."
+            "World-class brand strategist and creative director. Produces expert strategy, colour palettes, social content packs, and business cards. Always ends strategy responses with a Focus Group Simulator section roleplaying 3 distinct customers. Never uses raw SVG. Responds in the user's language. Refuses fake scarcity/FOMO and offers ethical alternatives."
         ),
         llm=llm,
         verbose=False,
@@ -541,107 +564,6 @@ def _make_ethical_strategy_director(llm: LLM) -> Agent:
 # These are injected into make_chat_task when the message requests that artifact.
 # Concrete templates produce dramatically better output than written rules alone.
 
-_ARTIFACT_LOGO = """
-=== GOLD-STANDARD LOGO IDENTITY SYSTEM — ZERO-DEPENDENCY EDITION ===
-Produce ONE self-contained HTML page (wrapped in ```html...``` fences) presenting a
-world-class logo identity in the spirit of Google, Microsoft, Amazon, Airbnb, or Nike.
-The page is a dramatic brand-reveal: a big hero lockup plus concept story — like a
-creative director pitching the logo to the client.
-
->>> HARD RULE 0 — THE PAGE MUST RENDER PERFECTLY WITH EVERY EXTERNAL RESOURCE BLOCKED <<<
-The preview sandbox may block Tailwind CDN, icon fonts, and Google Fonts. A logo that
-depends on them goes BLANK. Therefore:
-- Build the ENTIRE design from a <style> block + inline style="" attributes using
-  PLAIN CSS (flex, grid, transforms, gradients, borders, shadows). Do NOT build the
-  layout or the SYMBOL from Tailwind utility classes, and NEVER let the symbol's
-  visibility depend on an external icon font.
-- Fonts: Google Fonts @import is a PROGRESSIVE ENHANCEMENT only. Every font-family
-  must carry a system fallback: font-family:'Poppins', system-ui, -apple-system,
-  'Segoe UI', Arial, sans-serif. If the font fails, the page still looks designed.
-- The SYMBOL must be visible as CSS shapes + background colours alone — give every
-  symbol div an explicit background. Text must never disappear.
-- Motion must be pure CSS (@keyframes). No JS required anywhere.
-
-STUDY HOW THE GREATS CONSTRUCT MARKS (keep the CONCEPT alive in text):
-  Google:    pure wordmark — the LOGO IS THE TYPOGRAPHY; each letter a distinct hue.
-  Microsoft: symbol-only — 4 flat squares in a 2x2 grid, each a brand colour,
-             staggered 0/25/50/75% baselines.
-  Amazon:    bold wordmark + a smile ARC beneath from first to last letter (a-to-z).
-  Airbnb:    custom rounded symbol + rounded wordmark sharing one corner-radius
-             design language.
-  Apple:     pure geometric symbol + clean sans wordmark.
-
-=== SIGNATURE MARK RECIPES — PLAIN CSS so they ALWAYS render ===
-R1 Microsoft-tile: 4 equal divs in a 2x2 grid (16px gap), each a DIFFERENT brand
-   colour, border-radius 4px, subtle 2px darker bottom edge for depth.
-R2 Google-wordmark: brand name as one wordmark where EACH LETTER (or key syllable)
-   is a <span> with its own hue, in a rounded geometric sans. Big, bold,
-   immaculate tracking.
-R3 Amazon-smile: bold wordmark + ARC underneath — div { width:60%; height:14px;
-   border-bottom:4px solid var(--primary); border-radius:0 0 24px 24px;
-   margin:2px auto 0; }
-R4 Geometric mark: layer 2-3 CSS shapes (rotated square + circle + ring) via
-   transform / box-shadow / border so the SHAPE is the hero; an optional glyph
-   (a styled letter, NOT an external icon) may sit at the CENTRE as the nucleus.
-R5 Two-tone badge: rounded-square (radius 26%) split diagonally via
-   linear-gradient, glyph overlaid, soft offset shadow.
-
-=== THE CONCEPT (always deliver this in TEXT — the ideas are the deliverable) ===
-Before the HTML, write a section titled "LOGO CONCEPT DIRECTIONS" with exactly THREE
-distinct logo concepts. For each: the name, the symbol idea in one vivid sentence, and
-the one-line meaning behind it. Example entry:
-  1. "The Raised Seed" — a layered geometric mark of a growing hexagon with a golden
-     drop nucleus; meaning: a 40-year family root pushing upward into a fresh market.
-This text is the heart of the response: it must stand alone as a complete logo brief
-even if the HTML visual below is never opened.
-
-=== THE PRESENTATION (one HTML page, 5 sections) ===
-0. HERO — dramatic stage: dark brand base, huge lockup (symbol + wordmark +
-   tracked tagline), and under it ONE italic "mark rationale" line explaining what
-   the symbol means (e.g. "the raised seed — growth rooted in heritage"). This text
-   is the CONCEPT: it must deliver the brand story even if the reader never scrolls.
-1. SYMBOL MARK alone at 4 sizes (120/64/40/18px favicon) on a neutral card —
-   proves scalability. The symbol MUST be a genuinely CONSTRUCTED mark from a
-   recipe above. NEVER a plain icon pasted into a circle. NEVER initials in a
-   rounded box.
-2. WORDMARK alone — a personality font; show it dark-on-light AND light-on-dark;
-   wrap ONE letter/syllable in <span class="accent-letter"> for a signature
-   colour moment. Set letter-spacing (tight -0.03em or wide 0.06em) and weight
-   700-900 deliberately.
-3. PRIMARY LOCKUP — symbol + wordmark side-by-side on THREE panels: dark base /
-   white / brand-primary colour; the symbol recoloured for contrast on each panel;
-   tagline (uppercase, tracked) under the wordmark on the dark panel.
-4. COLOUR SYSTEM BAR — Primary / Secondary / Accent / Base-Dark swatches with hex
-   codes + usage labels (CTAs / gradient pair / pop accent / base type).
-
-=== "MIND-BLOWING" MOTION — pure CSS, subtle and premium ===
-- @keyframes shimmer: a soft diagonal light sweep across the hero symbol
-  (pseudo-element with linear-gradient + translateX loop, 3-4s ease-in-out
-  infinite).
-- @keyframes float: the hero symbol drifts up 8px and back (5s ease-in-out
-  infinite) — a living logo, not a static picture.
-- Panels lift on hover (transform:translateY(-4px) + deepened shadow); colour
-  swatches scale 1.05. Respect prefers-reduced-motion.
-
-=== TYPOGRAPHY EXCELLENCE (what makes Google/Amazon read "designed") ===
-- Pick a display font with real personality for the industry: honey/heritage →
-  Marcellus, Cormorant Garamond; tech → Space Grotesk, Sora; playful → Baloo 2,
-  Fredoka; fashion → Fraunces, Italiana. Body font: a clean sans.
-- Wordmark techniques: gradient text (background-clip:text), per-letter hues,
-  1px outlined (text-stroke) letter, or a coloured full-stop accent glyph.
-- Arabic/RTL brands: use a Google Arabic font (Cairo, Tajawal, Reem Kufi, Amiri,
-  Aref Ruqaa) and keep <html dir="rtl">; remember system fallbacks for those too.
-
-=== QUALITY BAR ===
-- THE PAGE MUST BE WRITTEN OUT IN FULL. FORBIDDEN anywhere: "..." placeholder
-  comments, "<!-- ... -->", "/* ... */", "TODO", "etc", "Sections 0-4", "lorem".
-  If the response would be too long, the model MUST still write every section
-  completely — never abbreviate a section to a comment.
-- Neutral canvas (e.g. #f2f2f5, not plain white); consistent radii and spacing.
-- :root CSS vars for every colour + RGB triplets.
-- Replace EVERY placeholder with real brand values from the business context.
-- Output the ENTIRE HTML inside ```html ... ``` fences. No raw <svg>/<path> tags.
-"""
 
 _ARTIFACT_PALETTE = """
 === GOLD-STANDARD COLOUR PALETTE ===
@@ -722,22 +644,39 @@ Output the ENTIRE HTML inside ```html ... ``` fences. No raw SVG.
 """
 
 
+_LOGO_TEXT_ONLY = """
+=== LOGO REQUESTS - TEXT-ONLY DELIVERY (overrides the VISUALS HTML rule) ===
+The user asked for a logo / brand mark / شعار. Do NOT generate any HTML document,
+image, or visual. A rendered logo visual is the ONE thing this studio no longer
+produces. Instead deliver PURE TEXT in the user's language:
+1. LOGO CONCEPT DIRECTIONS - exactly THREE distinct logo concepts. For each: the
+   name, the symbol idea in one vivid sentence, and the one-line meaning behind it.
+2. BRAND STRATEGY - positioning, target audience, tone, and colour direction built
+   around those concepts.
+3. End with the Focus Group Simulator section (rule 6).
+The logo IDEA is the deliverable - no HTML, no code fences, no visuals.
+"""
+
+
+def _is_logo_request(message: str) -> bool:
+    m = message.lower()
+    return any(w in m for w in ("logo", "brand mark", "monogram", "شعار", "لوجو", "لوغو"))
+
+
 def _detect_artifact_type(message: str) -> str:
     """
     Detect which visual artifact type the user is requesting so the correct
     gold-standard scaffold can be injected into the task description.
-    Returns one of: 'logo', 'palette', 'social', 'bizcard', 'general'.
+    Returns one of: 'palette', 'social', 'bizcard', 'general'.
     """
     m = message.lower()
-    if any(w in m for w in ("logo", "mark", "brand mark", "monogram", "Ø´Ø¹Ø§Ø±", "Ù„ÙˆØºÙˆ")):
-        return "logo"
     if any(w in m for w in ("palette", "colour", "color", "colors", "colours", "swatch",
-                             "Ø£Ù„ÙˆØ§Ù†", "Ù„ÙˆÙ†", "palette")):
+                             "ألوان", "لون")):
         return "palette"
-    if any(w in m for w in ("social", "post", "instagram", "facebook", "tweet", "Ù…Ù†Ø´ÙˆØ±",
-                             "Ø³ÙˆØ´ÙŠØ§Ù„", "ØªØºØ±ÙŠØ¯Ø©")):
+    if any(w in m for w in ("social", "post", "instagram", "facebook", "tweet", "منشور",
+                             "سوشيال", "تغريدة")):
         return "social"
-    if any(w in m for w in ("business card", "carte", "bcard", "ÙƒØ±Øª", "Ø¨Ø·Ø§Ù‚Ø© Ø¹Ù…Ù„",
+    if any(w in m for w in ("business card", "carte", "bcard", "كرت", "بطاقة عمل",
                              "visiting card")):
         return "bizcard"
     return "general"
@@ -761,8 +700,8 @@ def make_chat_task(
     # Inject the matching scaffold only when the user is asking for a visual
     artifact_type = _detect_artifact_type(user_message)
     scaffold_block = ""
-    if artifact_type == "logo":
-        scaffold_block = _ARTIFACT_LOGO
+    if _is_logo_request(user_message):
+        scaffold_block = _LOGO_TEXT_ONLY
     elif artifact_type == "palette":
         scaffold_block = _ARTIFACT_PALETTE
     elif artifact_type == "social":
@@ -817,22 +756,6 @@ def make_chat_task(
             "   - Google Fonts via @import â€” pick 2 fonts that define the brand personality precisely\n"
             "   - CSS variables in :root {} for ALL colours AND their RGB triplets for rgba() use\n"
             f"   - {_TAILWIND_EXCELLENCE}\n"
-           "   - For LOGO: produce a FULL LOGO IDENTITY SYSTEM (not just an icon in a box): "
-           "     (1) Symbol mark at 4 sizes (scalability test), "
-           "     (2) Wordmark dark-on-light AND light-on-dark, "
-           "     (3) Full lockup on dark bg / light bg / brand-colour bg, "
-           "     (4) Colour system bar with hex codes and usage labels. "
-           "     CRITICAL: build ALL layout + the symbol from an embedded <style> block "
-           "     and inline styles in PLAIN CSS — the page must render fully with Tailwind "
-           "     CDN / icon fonts / Google Fonts all blocked (the preview sandbox may "
-           "     block them). Give every symbol div an explicit background. Fonts need "
-           "     system fallbacks. Include a one-line mark-rationale under the hero lockup. "
-           "     Symbol = CONSTRUCTED from a signature recipe (Microsoft-style 4-colour "
-           "     tile, Google-style per-letter wordmark, Amazon-style smile arc, or layered "
-           "     geometric shapes) — NEVER a plain Phosphor icon pasted into a circle, "
-           "     NEVER initials in a rounded box. "
-           "     Wordmark = precision Google Font + selective accent on 1 letter. "
-           "     Add pure-CSS keyframe motion (shimmer sweep + float) to the hero.\n"
             "   - For SOCIAL POST: do NOT generate any HTML. Deliver a plain-text CONTENT PACK: "
             "     3 post copy variants (Post 1 Hero/Brand Statement, Post 2 Value/Feature, "
             "     Post 3 Community/Story). For each post: headline, body copy (2-4 sentences), "
@@ -846,6 +769,19 @@ def make_chat_task(
             + (f"{scaffold_block}\n\n" if scaffold_block else "")
             + "5. TONE: Confident, expert, warm, direct. Sound like a seasoned creative director "
             "who genuinely cares about the client's success.\n\n"
+            + "6. FOCUS GROUP SIMULATOR (REQUIRED FINAL SECTION - never skip, always the last "
+            "part of your response): End EVERY response with a section titled "
+            "'محاكاة ردود أفعال الجمهور' (English: 'Target Audience Simulation'; localize the "
+            "title into the user's language). Roleplay as 3 DISTINCT potential customers - "
+            "realistic, specific personas (e.g. a skeptical university student, a busy parent, "
+            "a local shop owner). For each persona write:\n"
+            "   - PROFILE: name, age, occupation, spending habits, attitude toward the brand\n"
+            "   - VERBATIM QUOTE: their exact words when first hearing the brand idea\n"
+            "   - TOP CONCERN: their #1 doubt or objection\n"
+            "   - WHAT CONVERTS THEM: the specific message, offer, or proof that wins them over\n"
+            "   - 1-LINE VERDICT: will they buy? why or why not?\n"
+            "Close the section with a 3-line SYNTHESIS: the single shared objection across all "
+            "three personas and the one change the brand should make to neutralize it.\n\n"
             "Respond now."
         ),
         agent=agent,
@@ -858,12 +794,15 @@ def make_chat_task(
             "Strategic advice must be complete with all content written out in full. "
             "Visual requests must include a ```html ... ``` block at the quality level of "
             "Pentagram / Wolff Olins / Collins: "
-            "LOGO requests â†’ full identity system (symbol at 4 sizes + wordmark dark/light + "
-            "lockup on 3 backgrounds + colour bar), symbol built from CSS div layers + Phosphor "
-            "icon nucleus (not initials in a box), wordmark with accent-letter technique; "
-            "SOCIAL POST requests: plain-text content pack only (no HTML) — 3 post copy "
+            "PALETTE requests â†’ full swatch system with hex codes + usage labels + typography "
+            "preview; "
+            "SOCIAL POST requests: plain-text content pack only (no HTML) â€” 3 post copy "
             "variants each with headline, body, hashtags, and photo search description, "
-            "plus 2-3 platform posting tips. No HTML artifact for social posts."
+            "plus 2-3 platform posting tips. No HTML artifact for social posts. "
+            "Every response MUST end with a Focus Group Simulator section titled "
+            "'محاكاة ردود أفعال الجمهور' (Target Audience Simulation) roleplaying 3 distinct "
+            "potential customers (each with profile, verbatim quote, top concern, what converts "
+            "them, and a verdict) plus a 3-line synthesis of the shared objection."
         ),
     )
 
