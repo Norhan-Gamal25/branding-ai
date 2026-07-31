@@ -159,7 +159,7 @@ section backgrounds dark/surface so the page has rhythm.
    (48px), h2.g-text, short paragraph, mailto .btn-primary button.
 7. FOOTER .section-surface: brand icon + name + tagline + © current year.
 
-=== 3b. INTERACTIONS (buttons must NEVER navigate anywhere) ===
+=== INTERACTION RULES (apply to EVERY section — buttons must never navigate) ===
 - Every CTA/button MUST be <button type="button"> — NEVER an <a> tag with
   href="/", href="index.html", href="#", or any real path/URL. A link like that
   hijacks the preview iframe to the app's main page.
@@ -358,11 +358,12 @@ def _is_skippable_error(err_str: str) -> bool:
     return any(m.lower() in low for m in markers)
 
 
-def _run_with_fallback(task_factory, model_list: list) -> str:
+def _run_with_fallback(task_factory, model_list: list, validate=None) -> str:
     """
     Try each model in model_list in order.
-    Skips to the next model on rate limits, decommissioned/invalid models, and
-    providers whose API key is not configured.
+    Skips to the next model on rate limits, decommissioned/invalid models,
+    providers whose API key is not configured, and (when a `validate` callback
+    is given) responses the callback rejects — e.g. an incomplete HTML page.
     Raises RuntimeError only if every model in the list fails.
     """
     last_err = None
@@ -377,9 +378,19 @@ def _run_with_fallback(task_factory, model_list: list) -> str:
                 process=Process.sequential,
                 verbose=False,
             )
-            result = crew.kickoff()
+            result = str(crew.kickoff())
+            if validate is not None and not validate(result):
+                logger.warning(
+                    "Model %s returned an invalid response (%d chars) — trying next model.",
+                    model, len(result),
+                )
+                last_err = RuntimeError(
+                    f"Model {model} returned an incomplete page ({len(result)} chars)"
+                )
+                time.sleep(0.3)
+                continue
             logger.info("Success with model: %s", model)
-            return str(result)
+            return result
         except _ProviderUnavailable as e:
             logger.warning(
                 "Skipping %s (%s) — trying next model.",
@@ -465,6 +476,20 @@ def make_site_task(
     )
 
 
+def _site_html_is_complete(html: str) -> bool:
+    """A generated landing page must be a closed document with a style block and
+    the custom classes the scaffold promises — otherwise the preview renders
+    unstyled/blank and looks 'broken' (common when a fallback model truncates)."""
+    low = html.lower()
+    if not (low.startswith("<!doctype") or low.startswith("<html")):
+        return False
+    if "</html>" not in low or "</body>" not in low:
+        return False
+    if "<style" not in low:
+        return False
+    return ".btn-primary" in low and ".g-text" in low
+
+
 def run_site_generation(
     business_description: str,
     language: str = "en",
@@ -474,7 +499,7 @@ def run_site_generation(
         task  = make_site_task(business_description, agent, language)
         return task, agent
 
-    raw = _run_with_fallback(factory, _SITE_MODELS)
+    raw = _run_with_fallback(factory, _SITE_MODELS, validate=_site_html_is_complete)
     # Validate and sanitise via Pydantic â€” salvages accidental markdown wrapping
     return SiteOutput(html_code=raw).html_code
 

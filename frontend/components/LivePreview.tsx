@@ -25,15 +25,17 @@ const NAV_GUARD = `<script>
     var href = (el.getAttribute('href') || '').trim();
     if(href.startsWith('#')){
       e.preventDefault();
+      e.stopPropagation();
       var target = document.querySelector(href);
       if(target) target.scrollIntoView({behavior:'smooth'});
       return;
     }
     if(href.startsWith('mailto:')) return;
     e.preventDefault();
+    e.stopPropagation();
   }
   document.addEventListener('click', handleClick, true);
-  document.addEventListener('submit', function(e){ e.preventDefault(); }, true);
+  document.addEventListener('submit', function(e){ e.preventDefault(); e.stopPropagation(); }, true);
 })();
 <\/script>`;
 

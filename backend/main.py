@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 
-from crew import run_site_generation, run_chat
+from crew import run_site_generation, run_chat, _site_html_is_complete
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -162,11 +162,17 @@ async def generate_site(request: SiteGenerationRequest):
         lang = detect_language(request.business_description)
         logger.info("Detected language '%s' for site generation", lang)
         html = await asyncio.to_thread(run_site_generation, request.business_description, lang)
-        # Strip DeepSeek chain-of-thought tags if present
         html = strip_think_tags(html)
         # Strip accidental markdown fences if the LLM adds them
         html = re.sub(r"^```[a-z]*\n?", "", html.strip(), flags=re.IGNORECASE)
         html = re.sub(r"\n?```$", "", html.strip())
+        if not _site_html_is_complete(html):
+            logger.error("Generated site page is incomplete (%d chars)", len(html))
+            raise HTTPException(
+                status_code=502,
+                detail="The generated page came back incomplete. "
+                       "Please try again in a minute.",
+            )
         return SiteGenerationResponse(html=html)
     except Exception as exc:
         logger.exception("Error in /api/generate-site")
